@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lobito de Mar restaurant</string>
+    <string name="btn_food">Eat</string>
+    <string name="btn_drink">Drink</string>
+    <string name="drink_photo">Drink view</string>
+    <string name="food_photo">Eat view</string>
+    <string name="str_btn_add">Add</string>
+    <string name="str_platofuerte">Main dish</string>
+    <string name="str_entrada">Entrée</string>
+    <string name="str_morning">Morning</string>
+    <string name="str_afternoon">Afternoon</string>
+    <string name="str_night">Night</string>
+    <string name="str_date">Schedule</string>
+    <string name="str_price">Price</string>
+    <string name="str_ingredients">Ingredients</string>
+    <string name="str_Name">Name</string>
+    <string name="str_type">Type</string>
+    <string name="str_timeprepa">Preparation time</string>
+    <string name="str_clean">Clean</string>
+    <string name="str_exit">Exit</string>
+    <string name="str_hour">Preparation hour</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, LoginActivity!</string>
+    <string name="app_name">Restaurante Lobito de Mar</string>
+    <string name="str_registro">Nuevo en el restaurante? Registrese aquí</string>
+    <string name="str_correo">Correo</string>
+    <string name="str_password">Contraseña</string>
+    <string name="str_login">Login</string>
+    <string name="str_name">Nombre Completo</string>
+    <string name="str_cap_email">Correo</string>
+    <string name="str_cap_password">Contraseña</string>
+    <string name="str_newRegister">Registra nueva cuenta</string>
+    <string name="str_alredy_account">Ya tiene cuenta! Logeese aquí</string>
+    <string name="str_cap_imagen">Imagen</string>
+</resources>

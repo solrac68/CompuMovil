@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Restaurante Lobito de Mar</string>
+    <string name="btn_food">Comidas</string>
+    <string name="btn_drink">Bebidas</string>
+    <string name="drink_photo">Imagen de la bebida</string>
+    <string name="food_photo">Imagen de la comida</string>
+    <string name="str_btn_add">Agregar</string>
+    <string name="str_platofuerte">Plato Fuerte</string>
+    <string name="str_entrada">Entrada</string>
+    <string name="str_morning">Mañana</string>
+    <string name="str_afternoon">Tarde</string>
+    <string name="str_night">Noche</string>
+    <string name="str_date">Horario</string>
+    <string name="str_price">Precio</string>
+    <string name="str_ingredients">Ingredientes</string>
+    <string name="str_Name">Nombre</string>
+    <string name="str_type">Típo</string>
+    <string name="str_timeprepa">Preparación</string>
+    <string name="str_clean">Limpiar</string>
+    <string name="str_exit">Salir</string>
+    <string name="str_hour">Hora preparación</string>
+</resources>
