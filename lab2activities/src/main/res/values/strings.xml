@@ -12,4 +12,5 @@
     <string name="str_newRegister">Registra nueva cuenta</string>
     <string name="str_alredy_account">Ya tiene cuenta! Logeese aquí</string>
     <string name="str_cap_imagen">Imagen</string>
+    <string name="without_access_security">Usted no tiene permiso para acceder a la localización del archivo</string>
 </resources>
