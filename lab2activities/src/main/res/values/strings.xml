@@ -13,4 +13,11 @@
     <string name="str_alredy_account">Ya tiene cuenta! Logeese aquí</string>
     <string name="str_cap_imagen">Imagen</string>
     <string name="without_access_security">Usted no tiene permiso para acceder a la localización del archivo</string>
+    <string name="ok_insert">Agregado exitosamente</string>
+    <string name="without_name">No se ha agregado el nombre</string>
+    <string name="without_email">No se agregó el correo</string>
+    <string name="without_password">No se agregó la conatraseña</string>
+    <string name="validate_empty">Existen campos estan vacíos</string>
+    <string name="ok_user_authenticate">Usuario validado con éxito</string>
+    <string name="nok_user_authenticate">El usuario no existe en el sistema</string>
 </resources>

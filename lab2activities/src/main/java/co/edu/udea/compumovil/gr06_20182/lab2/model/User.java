@@ -15,7 +15,7 @@ public class User {
     private String name;
     private String password;
     private String email;
-    private Bitmap image;
+    private byte[] image;
     // Create table SQL query
 
     public static final String CREATE_TABLE =
@@ -26,12 +26,16 @@ public class User {
                     + COLUMN_EMAIL + " TEXT,"
                     + COLUMN_IMAGE + " BLOB"
                     + ")";
+    public static final String SQL_CHECK_EMAIL =
+            "SELECT * FROM "+User.TABLE_NAME+ " where " + User.COLUMN_EMAIL + "=?";
+
+    public static final String SQL_CHECK_EMAIL_PASSWORD =
+            "SELECT * FROM "+User.TABLE_NAME+ " where " + User.COLUMN_EMAIL + "=? AND " + User.COLUMN_PASSWORD + "=?";
 
     public User() {
     }
 
-    public User(int id, String name, String password, String email, Bitmap image, String timestamp) {
-        this.id = id;
+    public User(String name, String password, String email, byte[] image) {
         this.name = name;
         this.password = password;
         this.email = email;
@@ -72,11 +76,11 @@ public class User {
         this.email = email;
     }
 
-    public Bitmap getImage() {
+    public byte[] getImage() {
         return image;
     }
 
-    public void setImage(Bitmap image) {
+    public void setImage(byte[] image) {
         this.image = image;
     }
 

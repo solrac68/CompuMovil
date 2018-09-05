@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,14 +26,15 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
+import co.edu.udea.compumovil.gr06_20182.lab2.model.Validation;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends Activity {   //AppCompatActivity {
     EditText edtName,edtPassword,edtEmail;
     Button btnImage,btnRegistry;
     ImageView imageView;
+    User user;
 
     final int REQUEST_CODE_GALLERY = 999;
-    final String DATABASE = "Restaurant.sqlite";
 
     public static  SqliteHelper sqliteHelper;
 
@@ -53,9 +56,10 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
         Init();
-        sqliteHelper = new SqliteHelper(this,DATABASE,null,1);
-        sqliteHelper.queryData(User.CREATE_TABLE);
-
+        Log.d("T","DESPUES DE INIT");
+        sqliteHelper = new SqliteHelper(this);
+        //sqliteHelper.queryData(User.CREATE_TABLE);
+        Log.d("T","DESPUES DE sqliteHelper");
         btnImage.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -65,15 +69,61 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        btnRegistry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                user = new User();
+                Validation val = validate();
+                if (!val.isEstate()){
+                    Toast.makeText(RegisterActivity.this,val.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                user.setName(edtName.getText().toString().trim());
+                user.setEmail(edtEmail.getText().toString().trim());
+                user.setPassword(edtPassword.getText().toString().trim());
+                user.setImage(imageViewToByte(imageView));
+                try {
+                    sqliteHelper.insertData(user);
+                    Toast.makeText(RegisterActivity.this, getString(R.string.ok_insert), Toast.LENGTH_SHORT).show();
+                    finish();
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+
+            }
+        });
+
+    }
+    private Validation validate(){
+        Validation val = new Validation();
+        val.setEstate(true);
+        val.setMessage("");
+
+        if (edtName.getText().toString().trim().length() == 0){
+            val.setEstate(false);
+            val.setMessage(getString(R.string.without_name));
+        }else if(edtEmail.getText().toString().trim().length() == 0){
+            val.setEstate(false);
+            val.setMessage(getString(R.string.without_email));
+        }else if(edtPassword.getText().toString().trim().length() == 0){
+            val.setEstate(false);
+            val.setMessage(getString(R.string.without_password));
+        }
+
+        return val;
+    }
+    private byte[] imageViewToByte(ImageView image){
+        Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+        return SqliteHelper.getBitmapAsByteArray(bitmap);
     }
 
     private void Init(){
-        edtName = findViewById(R.id.edtName);
-        edtPassword= findViewById(R.id.edtPassword);
-        edtEmail = findViewById(R.id.edtEmail);
-        btnImage = findViewById(R.id.btnImage);
-        btnRegistry = findViewById(R.id.btnRegistry);
-        imageView = findViewById(R.id.imageView);
+        edtName = (EditText) findViewById(R.id.edtName);
+        edtPassword= (EditText)findViewById(R.id.edtPassword);
+        edtEmail = (EditText)findViewById(R.id.edtEmail);
+        btnImage = (Button) findViewById(R.id.btnImage);
+        btnRegistry = (Button)findViewById(R.id.btnRegistry);
+        imageView = (ImageView) findViewById(R.id.imageView);
     }
 
     @Override

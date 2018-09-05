@@ -1,5 +1,6 @@
 package co.edu.udea.compumovil.gr06_20182.lab2;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,8 +15,11 @@ import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
 
 public class SqliteHelper extends SQLiteOpenHelper {
 
-    public SqliteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+    private static final String DATABASE = "Restaurant.sqlite";
+
+
+    public SqliteHelper(Context context){
+        super(context, DATABASE, null, 1);
     }
 
     public void queryData(String sql){
@@ -23,17 +27,31 @@ public class SqliteHelper extends SQLiteOpenHelper {
         database.execSQL(sql);
     }
 
-    public void insertData(User usuario){
+    public void insertData(User user){
         SQLiteDatabase database = getWritableDatabase();
+
         String sql = "INSERT INTO " + User.TABLE_NAME + " VALUES (NULL,?,?,?,?)";
         SQLiteStatement statement = database.compileStatement(sql);
         statement.clearBindings();;
-        statement.bindString(1,usuario.getName());
-        statement.bindString(1,usuario.getPassword());
-        statement.bindString(1,usuario.getEmail());
-        statement.bindBlob(1,getBitmapAsByteArray(usuario.getImage()));
+        statement.bindString(1,user.getName());
+        statement.bindString(2,user.getPassword());
+        statement.bindString(3,user.getEmail());
+        statement.bindBlob(4,user.getImage());
         statement.executeInsert();
         statement.clearBindings();
+    }
+
+    public boolean insertDataSecure(User user){
+        SQLiteDatabase database = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(User.COLUMN_NAME,user.getName());
+        contentValues.put(User.COLUMN_PASSWORD,user.getPassword());
+        contentValues.put(User.COLUMN_EMAIL,user.getEmail());
+        contentValues.put(User.COLUMN_IMAGE,user.getImage());
+        long ins = database.insert(User.TABLE_NAME,null,contentValues);
+
+        return !(ins == -1);
     }
 
     public Cursor getData(String sql){
@@ -45,6 +63,20 @@ public class SqliteHelper extends SQLiteOpenHelper {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
         return outputStream.toByteArray();
+    }
+
+    // Checking if email exists
+    public Boolean chkemail(String email){
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.rawQuery(User.SQL_CHECK_EMAIL,new String[]{email});
+        return cursor.getCount() > 0;
+    }
+
+    // Checking if email exists
+    public Boolean chkemailpassword(String email,String password){
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.rawQuery(User.SQL_CHECK_EMAIL_PASSWORD,new String[]{email,password});
+        return cursor.getCount() > 0;
     }
 
     public Bitmap getImage(int i){
@@ -66,11 +98,11 @@ public class SqliteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
+        db.execSQL(User.CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
     }
 }
