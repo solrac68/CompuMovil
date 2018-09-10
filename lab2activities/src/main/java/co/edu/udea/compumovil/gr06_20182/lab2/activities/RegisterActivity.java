@@ -1,7 +1,7 @@
-package co.edu.udea.compumovil.gr06_20182.lab2;
+package co.edu.udea.compumovil.gr06_20182.lab2.activities;
 
 import android.Manifest;
-import android.app.Activity;
+//import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -25,10 +24,12 @@ import android.widget.Toast;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import co.edu.udea.compumovil.gr06_20182.lab2.R;
 import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
 import co.edu.udea.compumovil.gr06_20182.lab2.model.Validation;
+import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
-public class RegisterActivity extends Activity {   //AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {  //Activity {
     EditText edtName,edtPassword,edtEmail;
     Button btnImage,btnRegistry;
     ImageView imageView;
@@ -36,7 +37,7 @@ public class RegisterActivity extends Activity {   //AppCompatActivity {
 
     final int REQUEST_CODE_GALLERY = 999;
 
-    public static  SqliteHelper sqliteHelper;
+    public static SqliteHelper sqliteHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

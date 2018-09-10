@@ -1,4 +1,4 @@
-package co.edu.udea.compumovil.gr06_20182.lab2;
+package co.edu.udea.compumovil.gr06_20182.lab2.tools;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,8 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
 import java.io.ByteArrayOutputStream;
+import java.security.PublicKey;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
 
@@ -57,6 +57,29 @@ public class SqliteHelper extends SQLiteOpenHelper {
     public Cursor getData(String sql){
         SQLiteDatabase database = getReadableDatabase();
         return database.rawQuery(sql,null);
+    }
+
+    public User getUserByEmail(String email){
+        User user = null;
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.query(User.TABLE_NAME,
+                new String[]{User.COLUMN_ID,User.COLUMN_NAME,User.COLUMN_PASSWORD,User.COLUMN_EMAIL},
+                User.COLUMN_EMAIL + "=?",
+                new String[]{email},null,null,null,null);
+
+        if(cursor != null){
+            cursor.moveToFirst();
+            user = new User(
+                    cursor.getInt(cursor.getColumnIndex(User.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(User.COLUMN_NAME)),
+                    cursor.getString(cursor.getColumnIndex(User.COLUMN_PASSWORD)),
+                    cursor.getString(cursor.getColumnIndex(User.COLUMN_EMAIL)),
+                    null
+            );
+        }
+
+        return user;
+
     }
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {

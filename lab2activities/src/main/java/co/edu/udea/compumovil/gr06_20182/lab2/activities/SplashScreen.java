@@ -1,9 +1,11 @@
-package co.edu.udea.compumovil.gr06_20182.lab2;
+package co.edu.udea.compumovil.gr06_20182.lab2.activities;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+
+import co.edu.udea.compumovil.gr06_20182.lab2.R;
 
 public class SplashScreen extends Activity {
 

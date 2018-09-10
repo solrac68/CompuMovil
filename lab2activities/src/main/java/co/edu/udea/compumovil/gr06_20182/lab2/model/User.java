@@ -16,6 +16,7 @@ public class User {
     private String password;
     private String email;
     private byte[] image;
+    private int id;
     // Create table SQL query
 
     public static final String CREATE_TABLE =
@@ -32,17 +33,21 @@ public class User {
     public static final String SQL_CHECK_EMAIL_PASSWORD =
             "SELECT * FROM "+User.TABLE_NAME+ " where " + User.COLUMN_EMAIL + "=? AND " + User.COLUMN_PASSWORD + "=?";
 
+    public static final String SQL_GET_NAME_BY_EMAIL =
+            "SELECT " + User.COLUMN_NAME + " FROM "+ User.TABLE_NAME + " where " + User.COLUMN_EMAIL + "=? ";
+
     public User() {
     }
 
-    public User(String name, String password, String email, byte[] image) {
+    public User(int id,String name, String password, String email, byte[] image) {
         this.name = name;
         this.password = password;
         this.email = email;
         this.image = image;
+        this.id = id;
     }
 
-    private int id;
+
 
     public int getId() {
         return id;

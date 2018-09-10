@@ -1,22 +1,31 @@
-package co.edu.udea.compumovil.gr06_20182.lab2;
+package co.edu.udea.compumovil.gr06_20182.lab2.activities;
 
-import android.app.Activity;
+//import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class LoginActivity extends Activity {
+import co.edu.udea.compumovil.gr06_20182.lab2.R;
+import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
+import co.edu.udea.compumovil.gr06_20182.lab2.tools.SessionManager;
+import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
+
+public class LoginActivity extends AppCompatActivity {  //Activity {
 
     // Controls in this form
     EditText email,password;
     Button btnLogin;
     TextView registerScreen;
 
-    public static  SqliteHelper sqliteHelper;
+    public static SqliteHelper sqliteHelper;
+
+    // Session Manager Class
+    SessionManager session;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +45,7 @@ public class LoginActivity extends Activity {
         btnLogin = findViewById(R.id.btnLogin);
         registerScreen = findViewById(R.id.link_to_register);
         sqliteHelper = new SqliteHelper(this);
+        session = new SessionManager(getApplicationContext());
     }
 
     private void initEvents(){
@@ -60,7 +70,13 @@ public class LoginActivity extends Activity {
                 }
                 else{
                     if(sqliteHelper.chkemailpassword(s1,s2)){
-                        Toast.makeText(getApplicationContext(), getString(R.string.ok_user_authenticate),Toast.LENGTH_SHORT).show();
+                        User user = sqliteHelper.getUserByEmail(s1);
+                        Toast.makeText(getApplicationContext(), user.getName(),Toast.LENGTH_SHORT).show();
+                        session.createLoginSession(user.getName(),s1);
+//
+                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(i);
+                        finish();
                     }
                     else{
 
