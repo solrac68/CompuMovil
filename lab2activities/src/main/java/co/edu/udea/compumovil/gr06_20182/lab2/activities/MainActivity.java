@@ -34,11 +34,15 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 switch (id){
-                    case R.id.account:
+                    case R.id.dishes:
                         Toast.makeText(MainActivity.this,"My Account", Toast.LENGTH_SHORT).show();
                     case R.id.settings:
                         Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
-                    case R.id.mycart:
+                    case R.id.drinks:
+                        Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
+                    case R.id.profile:
+                        Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
+                    case R.id.close_session:
                         Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
                     default:
                         return true;
