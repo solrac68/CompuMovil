@@ -51,6 +51,7 @@
 				android:layout_marginBottom="20dip"
 				android:layout_marginTop="5dip"
 				android:hint="@string/str_correo"
+				android:text="solrac.hincapie@gmail.com"
 				android:singleLine="true" />
 		  <!--  Password Label -->
 
@@ -60,6 +61,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginTop="5dip"
 				android:hint="@string/str_password"
+				android:text="solrac2013"
 				android:inputType="textPassword"
 				android:singleLine="true" />
 		  <!-- Login button -->	
