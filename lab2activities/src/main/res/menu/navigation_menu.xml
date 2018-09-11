@@ -15,4 +15,7 @@
     <item android:id="@+id/close_session"
         android:icon="@mipmap/ic_home_black_24dp"
         android:title="@string/close_session"/>
+    <item android:id="@+id/about"
+        android:icon="@mipmap/ic_notifications_black_24dp"
+        android:title="@string/activity_title_about_us"/>
 </menu>

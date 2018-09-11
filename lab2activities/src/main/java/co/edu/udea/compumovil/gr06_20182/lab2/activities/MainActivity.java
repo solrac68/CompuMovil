@@ -18,6 +18,7 @@ import android.widget.Toast;
 import java.util.HashMap;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.R;
+import co.edu.udea.compumovil.gr06_20182.lab2.fragment.About;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Dishes;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Drinks;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Profile;
@@ -39,13 +40,8 @@ public class MainActivity extends AppCompatActivity {
     // index to identify current nav menu item
     public static int navItemIndex = 0;
 
-    // tags used to attach the fragments
-    private static final String TAG_HOME = "home";
-    private static final String TAG_PHOTOS = "photos";
-    private static final String TAG_MOVIES = "movies";
-    private static final String TAG_NOTIFICATIONS = "notifications";
-    private static final String TAG_SETTINGS = "settings";
-    public static String CURRENT_TAG = TAG_HOME;
+
+    public static int CURRENT_POSITION = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
         txtViewHeader.setText(userName);
         txtViewHeaderEmail.setText(userEmail);
 
+        if (savedInstanceState == null) {
+            changeFragment(new Dishes());
+            nv.getMenu().getItem(0).setActionView(R.layout.menu_dot);
+        }
+
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -75,33 +76,43 @@ public class MainActivity extends AppCompatActivity {
                 switch (id){
                     case R.id.dishes:
                         changeFragment(new Dishes());
-                        //Toast.makeText(MainActivity.this,"My Account", Toast.LENGTH_SHORT).show();
+                        CURRENT_POSITION = 0;
+                        break;
+                    case R.id.drinks:
+                        changeFragment(new Drinks());
+                        CURRENT_POSITION = 1;
+                        break;
+                    case R.id.profile:
+                        changeFragment(new Profile());
+                        CURRENT_POSITION = 2;
                         break;
                     case R.id.settings:
                         changeFragment(new Settings());
+                        CURRENT_POSITION = 3;
                         break;
-                        //Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
-                    case R.id.drinks:
-                        changeFragment(new Drinks());
-                        break;
-                        //Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
-                    case R.id.profile:
-                        changeFragment(new Profile());
-                        break;
-                        //Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
                     case R.id.close_session:
                         session.logoutUser();
-                        //finish();
                         break;
+                    case R.id.about:
+                        changeFragment(new About());
+                        CURRENT_POSITION = 5;
+                        break;
+
                     default:
-                        return true;
                 }
+                removeActionView(CURRENT_POSITION);
                 return true;
             }
         });
 
     }
 
+    public void removeActionView(int position){
+        for(int i=0;i<=5;i++){
+            nv.getMenu().getItem(i).setActionView(null);
+        }
+        nv.getMenu().getItem(position).setActionView(R.layout.menu_dot);
+    }
     public void changeFragment(Fragment fragment){
 
         // Create transaction
@@ -121,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Closing drawer on item click
         dl.closeDrawers();
+        invalidateOptionsMenu();
 
     }
 
