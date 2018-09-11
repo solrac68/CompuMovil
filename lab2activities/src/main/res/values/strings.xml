@@ -67,4 +67,8 @@
     <string name="profile">Perfil</string>
     <string name="settings">Configuraciones</string>
     <string name="close_session">Cerrar sesión</string>
+    <string name="hello_blank_dishes">Hola Plato</string>
+    <string name="hello_blank_drinks">Hola Bebidas</string>
+    <string name="hello_blank_profile">Hola Perfil</string>
+    <string name="hello_blank_settings">Hola Configuración</string>
 </resources>

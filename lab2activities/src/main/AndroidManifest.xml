@@ -35,7 +35,7 @@
         <activity
             android:name=".activities.RegisterActivity"
             android:label="Register New Account" />
-        <activity android:name=".activities.MainActivity"></activity>
+        <activity android:name=".activities.MainActivity" />
     </application>
 
 </manifest>

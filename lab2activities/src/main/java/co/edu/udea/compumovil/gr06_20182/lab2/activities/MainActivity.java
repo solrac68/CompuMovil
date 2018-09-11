@@ -2,6 +2,9 @@ package co.edu.udea.compumovil.gr06_20182.lab2.activities;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +18,10 @@ import android.widget.Toast;
 import java.util.HashMap;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.R;
+import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Dishes;
+import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Drinks;
+import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Profile;
+import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Settings;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +35,17 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager session;
     private String userName;
     private String userEmail;
+
+    // index to identify current nav menu item
+    public static int navItemIndex = 0;
+
+    // tags used to attach the fragments
+    private static final String TAG_HOME = "home";
+    private static final String TAG_PHOTOS = "photos";
+    private static final String TAG_MOVIES = "movies";
+    private static final String TAG_NOTIFICATIONS = "notifications";
+    private static final String TAG_SETTINGS = "settings";
+    public static String CURRENT_TAG = TAG_HOME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,20 +74,53 @@ public class MainActivity extends AppCompatActivity {
                 int id = item.getItemId();
                 switch (id){
                     case R.id.dishes:
-                        Toast.makeText(MainActivity.this,"My Account", Toast.LENGTH_SHORT).show();
+                        changeFragment(new Dishes());
+                        //Toast.makeText(MainActivity.this,"My Account", Toast.LENGTH_SHORT).show();
+                        break;
                     case R.id.settings:
-                        Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
+                        changeFragment(new Settings());
+                        break;
+                        //Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
                     case R.id.drinks:
-                        Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
+                        changeFragment(new Drinks());
+                        break;
+                        //Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
                     case R.id.profile:
-                        Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
+                        changeFragment(new Profile());
+                        break;
+                        //Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
                     case R.id.close_session:
-                        Toast.makeText(MainActivity.this,"Settings", Toast.LENGTH_SHORT).show();
+                        session.logoutUser();
+                        //finish();
+                        break;
                     default:
                         return true;
                 }
+                return true;
             }
         });
+
+    }
+
+    public void changeFragment(Fragment fragment){
+
+        // Create transaction
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+
+        // Create new fragment
+        //Fragment fragmentA = new FragmentA();
+        // Replace whatever is in the fragment_container view with this fragment
+        transaction.replace(R.id.frame, fragment);
+
+        // add the transaction to the back stack (optional)
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+
+        //Closing drawer on item click
+        dl.closeDrawers();
 
     }
 
