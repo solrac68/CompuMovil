@@ -63,7 +63,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         User user = null;
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.query(User.TABLE_NAME,
-                new String[]{User.COLUMN_ID,User.COLUMN_NAME,User.COLUMN_PASSWORD,User.COLUMN_EMAIL},
+                new String[]{User.COLUMN_ID,User.COLUMN_NAME,User.COLUMN_PASSWORD,User.COLUMN_EMAIL,User.COLUMN_IMAGE},
                 User.COLUMN_EMAIL + "=?",
                 new String[]{email},null,null,null,null);
 
@@ -74,7 +74,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndex(User.COLUMN_NAME)),
                     cursor.getString(cursor.getColumnIndex(User.COLUMN_PASSWORD)),
                     cursor.getString(cursor.getColumnIndex(User.COLUMN_EMAIL)),
-                    null
+                    cursor.getBlob(cursor.getColumnIndex(User.COLUMN_IMAGE))
             );
         }
 
@@ -102,22 +102,10 @@ public class SqliteHelper extends SQLiteOpenHelper {
         return cursor.getCount() > 0;
     }
 
-    public Bitmap getImage(int i){
-        SQLiteDatabase db = getReadableDatabase();
-        String qu = "select img  from table where feedid=" + i ;
-        Cursor cur = db.rawQuery(qu, null);
-
-        if (cur.moveToFirst()){
-            byte[] imgByte = cur.getBlob(0);
-            cur.close();
-            return BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
-        }
-        if (cur != null && !cur.isClosed()) {
-            cur.close();
-        }
-
-        return null ;
+    public static Bitmap getByteArrayAsBitmap(byte[] imgByte) {
+        return BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
     }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {

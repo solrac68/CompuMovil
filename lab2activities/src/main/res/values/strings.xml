@@ -77,4 +77,7 @@
     <string name="str_curso">Materia</string>
     <string name="str_description_course">Computación Móvil - 2554767-1</string>
     <string name="str_about">Curso de Computación Móvil</string>
+    <string name="str_imagen_usuario">Imagen Usuario</string>
+    <string name="usuario">Usuario:</string>
+    <string name="email">Correo:</string>
 </resources>

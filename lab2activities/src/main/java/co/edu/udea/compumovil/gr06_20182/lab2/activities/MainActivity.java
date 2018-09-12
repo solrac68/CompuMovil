@@ -23,7 +23,9 @@ import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Dishes;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Drinks;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Profile;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Settings;
+import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SessionManager;
+import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager session;
     private String userName;
     private String userEmail;
+    private byte[] image;
+    public static SqliteHelper sqliteHelper;
 
     // index to identify current nav menu item
     public static int navItemIndex = 0;
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         navHeader = nv.getHeaderView(0);
         txtViewHeader =  navHeader.findViewById(R.id.textViewHeader);
         txtViewHeaderEmail = navHeader.findViewById(R.id.textViewHeaderEmail);
+        sqliteHelper = new SqliteHelper(this);
 
         getSession();
 
@@ -83,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                         CURRENT_POSITION = 1;
                         break;
                     case R.id.profile:
-                        changeFragment(new Profile());
+                        changeFragment(Profile.newInstance(image,userName,userEmail));
                         CURRENT_POSITION = 2;
                         break;
                     case R.id.settings:
@@ -91,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                         CURRENT_POSITION = 3;
                         break;
                     case R.id.close_session:
+                        finish();
                         session.logoutUser();
                         break;
                     case R.id.about:
@@ -141,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         HashMap<String, String> user = session.getUserDetails();
         userName = user.get(SessionManager.KEY_NAME);
         userEmail = user.get(SessionManager.KEY_EMAIL);
+        image = sqliteHelper.getUserByEmail(userEmail).getImage();
     }
 
 

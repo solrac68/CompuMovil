@@ -54,6 +54,7 @@ public class SessionManager {
         // Storing email in pref
         editor.putString(KEY_EMAIL, email);
 
+
         // commit changes
         editor.commit();
     }
