@@ -71,4 +71,10 @@
     <string name="hello_blank_drinks">Hola Bebidas</string>
     <string name="hello_blank_profile">Hola Perfil</string>
     <string name="hello_blank_settings">Hola Configuración</string>
+    <string name="str_about_image">Lobito de Mar</string>
+    <string name="str_description_restaurant">El mejor restaurante de comida de mar, comparta con el cotizado chef Antoine y observe como su comida se prepara</string>
+    <string name="str_restaurant">Restaurante Lobito de Mar</string>
+    <string name="str_curso">Materia</string>
+    <string name="str_description_course">Computación Móvil - 2554767-1</string>
+    <string name="str_about">Curso de Computación Móvil</string>
 </resources>
