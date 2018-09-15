@@ -92,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
                         CURRENT_POSITION = 2;
                         break;
                     case R.id.settings:
-                        changeFragment(new Settings());
+                        Settings.newInstance("1","2");
+                        changeFragment2(Settings.newInstance("1","2");
                         CURRENT_POSITION = 3;
                         break;
                     case R.id.close_session:
@@ -111,6 +112,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void changeFragment2(Settings fragment) {
+        // Create transaction
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+
+        // Create new fragment
+        //Fragment fragmentA = new FragmentA();
+        // Replace whatever is in the fragment_container view with this fragment
+        transaction.replace(R.id.frame, fragment);
+
+        // add the transaction to the back stack (optional)
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+
+        //Closing drawer on item click
+        dl.closeDrawers();
+        invalidateOptionsMenu();
     }
 
     public void removeActionView(int position){

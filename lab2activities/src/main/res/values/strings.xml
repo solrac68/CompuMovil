@@ -80,4 +80,20 @@
     <string name="str_imagen_usuario">Imagen Usuario</string>
     <string name="usuario">Usuario:</string>
     <string name="email">Correo:</string>
+    <string name="your_name">Sú nombre</string>
+    <string name="enter_name">Entre su nombre completo</string>
+    <string name="name">Nombre</string>
+    <string name="resumen">Carlos Augusto</string>
+    <string name="your_email">Sú correo</string>
+    <string name="enter_your_email">Digite su dirección de correo</string>
+    <string name="email_str">Correo</string>
+    <string name="your_password">Contraseña</string>
+    <string name="enter_your_password">digite su contraseña</string>
+    <string name="password">Contraseña</string>
+    <string name="user">Usuario</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="str_enable_notification">Activar notificaciones</string>
+    <string name="str_active_notactive">Active o desactive notificaciones</string>
+    <string name="str_enable_sound">Activar sonido</string>
+    <string name="str_active_notactive_sound">Active o desactive el sonido</string>
 </resources>
