@@ -27,7 +27,7 @@ import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SessionManager;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Settings.OnFragmentInteractionListener {
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager session;
     private String userName;
     private String userEmail;
+    private String userPassword;
     private byte[] image;
     public static SqliteHelper sqliteHelper;
 
@@ -66,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSession();
 
-        txtViewHeader.setText(userName);
-        txtViewHeaderEmail.setText(userEmail);
+
 
         if (savedInstanceState == null) {
             changeFragment(new Dishes());
@@ -92,8 +92,7 @@ public class MainActivity extends AppCompatActivity {
                         CURRENT_POSITION = 2;
                         break;
                     case R.id.settings:
-                        Settings.newInstance("1","2");
-                        changeFragment(Settings.newInstance("1","2"));
+                        changeFragment(Settings.newInstance(userName,userEmail,userPassword));
                         CURRENT_POSITION = 3;
                         break;
                     case R.id.close_session:
@@ -169,7 +168,11 @@ public class MainActivity extends AppCompatActivity {
         HashMap<String, String> user = session.getUserDetails();
         userName = user.get(SessionManager.KEY_NAME);
         userEmail = user.get(SessionManager.KEY_EMAIL);
+        userPassword = user.get(SessionManager.KEY_PASSWORD);
         image = sqliteHelper.getUserByEmail(userEmail).getImage();
+
+        txtViewHeader.setText(userName);
+        txtViewHeaderEmail.setText(userEmail);
     }
 
 
@@ -178,5 +181,26 @@ public class MainActivity extends AppCompatActivity {
         if(t.onOptionsItemSelected(item))
             return true;
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(String name,String email, String password) {
+        if(name != null){
+            userName = name;
+            //Toast.makeText(userName)
+            Toast.makeText(getApplicationContext(), userName,Toast.LENGTH_SHORT).show();
+        }
+        if(password != null){
+            userPassword = password;
+            Toast.makeText(getApplicationContext(), userPassword,Toast.LENGTH_SHORT).show();
+        }
+        if(email != null){
+            userEmail = email;
+            Toast.makeText(getApplicationContext(), userEmail,Toast.LENGTH_SHORT).show();
+        }
+
+        txtViewHeader.setText(userName);
+        txtViewHeaderEmail.setText(userEmail);
+        //getSession();
     }
 }

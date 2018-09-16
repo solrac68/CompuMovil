@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {  //Activity {
                     if(sqliteHelper.chkemailpassword(s1,s2)){
                         User user = sqliteHelper.getUserByEmail(s1);
                         Toast.makeText(getApplicationContext(), user.getName(),Toast.LENGTH_SHORT).show();
-                        session.createLoginSession(user.getName(),s1);
+                        session.createLoginSession(user.getName(),s1,s2);
 //
                         Intent i = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(i);
