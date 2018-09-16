@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.settings:
                         Settings.newInstance("1","2");
-                        changeFragment2(Settings.newInstance("1","2");
+                        changeFragment(Settings.newInstance("1","2"));
                         CURRENT_POSITION = 3;
                         break;
                     case R.id.close_session:
