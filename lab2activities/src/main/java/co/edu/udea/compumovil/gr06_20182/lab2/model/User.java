@@ -10,7 +10,6 @@ public class User {
     public static final String COLUMN_PASSWORD = "password";
     public static final String COLUMN_EMAIL = "email";
     public static final String COLUMN_IMAGE = "image";
-    public static final String COLUMN_TIMESTAMP = "timestamp";
 
     private String name;
     private String password;

@@ -23,7 +23,6 @@ import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Dishes;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Drinks;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Profile;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Settings;
-import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SessionManager;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 

@@ -3,6 +3,7 @@
     package="co.edu.udea.compumovil.gr06_20182.lab2">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -35,6 +36,7 @@
         <activity
             android:name=".activities.RegisterActivity"
             android:label="Register New Account" />
+
         <activity android:name=".activities.MainActivity" />
     </application>
 

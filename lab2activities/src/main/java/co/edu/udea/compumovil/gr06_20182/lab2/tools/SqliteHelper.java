@@ -9,8 +9,10 @@ import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import java.io.ByteArrayOutputStream;
-import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
 
+import co.edu.udea.compumovil.gr06_20182.lab2.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
 
 public class SqliteHelper extends SQLiteOpenHelper {
@@ -37,6 +39,21 @@ public class SqliteHelper extends SQLiteOpenHelper {
         statement.bindString(2,user.getPassword());
         statement.bindString(3,user.getEmail());
         statement.bindBlob(4,user.getImage());
+        statement.executeInsert();
+        statement.clearBindings();
+    }
+
+    public void insertData(Dish dish){
+        SQLiteDatabase database = getWritableDatabase();
+
+        String sql = "INSERT INTO " + Dish.TABLE_NAME + " VALUES (NULL,?,?,?,?,?)";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.clearBindings();;
+        statement.bindString(1,dish.getName());
+        statement.bindLong(2,dish.getPrice());
+        statement.bindLong(3,dish.getTime_preparation());
+        statement.bindLong(4,dish.isFavorite()?1:0);
+        statement.bindBlob(5,dish.getImage());
         statement.executeInsert();
         statement.clearBindings();
     }
@@ -82,6 +99,66 @@ public class SqliteHelper extends SQLiteOpenHelper {
 
     }
 
+    public Dish getDishById(Integer id){
+        Dish dish = null;
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.query(Dish.TABLE_NAME,
+                new String[]{Dish.COLUMN_ID,Dish.COLUMN_NAME,Dish.COLUMN_PRICE,Dish.COLUMN_TIME_PREPARATION,Dish.COLUMN_FAVORITE,Dish.COLUMN_IMAGE},
+                Dish.COLUMN_ID + "=?",
+                new String[]{id.toString()},null,null,null,null);
+
+        if(cursor != null){
+            cursor.moveToFirst();
+            dish = new Dish(
+                    cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(Dish.COLUMN_NAME)),
+                    cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_PRICE)),
+                    cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_TIME_PREPARATION)),
+                    cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_FAVORITE))==1,
+                    cursor.getBlob(cursor.getColumnIndex(Dish.COLUMN_IMAGE))
+            );
+        }
+
+        return dish;
+    }
+
+    public List<Dish> getDishes(){
+        List<Dish> dishes = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + Dish.TABLE_NAME + " ORDER BY " + Dish.COLUMN_ID + " DESC";
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                Dish dish = new Dish(
+                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(Dish.COLUMN_NAME)),
+                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_PRICE)),
+                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_TIME_PREPARATION)),
+                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_FAVORITE))==1,
+                        cursor.getBlob(cursor.getColumnIndex(Dish.COLUMN_IMAGE))
+                );
+                dishes.add(dish);
+            } while(cursor.moveToNext());
+        }
+
+        return dishes;
+    }
+
+    public int updateDish(Dish dish){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(Dish.COLUMN_FAVORITE, dish.isFavorite()?1:0);
+        values.put(Dish.COLUMN_NAME, dish.getName());
+        values.put(Dish.COLUMN_IMAGE, dish.getImage());
+        values.put(Dish.COLUMN_TIME_PREPARATION, dish.getTime_preparation());
+        values.put(Dish.COLUMN_PRICE, dish.getPrice());
+
+        return db.update(Dish.TABLE_NAME, values, Dish.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(dish.getId())});
+    }
+
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
@@ -110,10 +187,12 @@ public class SqliteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(User.CREATE_TABLE);
+        db.execSQL(Dish.CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + Dish.TABLE_NAME);
     }
 }

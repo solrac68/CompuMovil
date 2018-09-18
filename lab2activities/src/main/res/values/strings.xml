@@ -96,4 +96,7 @@
     <string name="str_active_notactive">Active o desactive notificaciones</string>
     <string name="str_enable_sound">Activar sonido</string>
     <string name="str_active_notactive_sound">Active o desactive el sonido</string>
+    <string name="toolbar_title">Platos</string>
+    <string name="action_search">Buscar</string>
+    <string name="search_hint">Escriba el nombre…</string>
 </resources>
