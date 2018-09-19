@@ -81,27 +81,36 @@ public class DishAddEdit extends Fragment {
         sqliteHelper = new SqliteHelper(getContext());
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_dish_add_edit, container, false);
-
+    private void init(View view){
         txtNameDish = view.findViewById(R.id.txtNameDish);
         txtTimePreparation = view.findViewById(R.id.txtTimePreparation);
         txtPrice = view.findViewById(R.id.txtPrice);
         checkFavorite =  view.findViewById(R.id.checkFavorite);
         imgDish = view.findViewById(R.id.imgDish);
         btnOk = view.findViewById(R.id.btnOk);
+    }
 
+    private void viewDataOnScreenToUpdate(){
+        dish = sqliteHelper.getDishById(id);
+        //Toast.makeText(getContext(), dish.getName(), Toast.LENGTH_SHORT).show();
+        imgDish.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dish.getImage()));
+        txtNameDish.setText(dish.getName());
+        txtTimePreparation.setText(dish.getTime_preparation().toString());
+        txtPrice.setText(dish.getPrice().toString());
+        checkFavorite.setChecked(dish.isFavorite());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_dish_add_edit, container, false);
+
+        init(view);
+
+        // If data exists, this is to show on Screen.
         if(!isNew){
-            dish = sqliteHelper.getDishById(id);
-            //Toast.makeText(getContext(), dish.getName(), Toast.LENGTH_SHORT).show();
-            imgDish.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dish.getImage()));
-            txtNameDish.setText(dish.getName());
-            txtTimePreparation.setText(dish.getTime_preparation().toString());
-            txtPrice.setText(dish.getPrice().toString());
-            checkFavorite.setChecked(dish.isFavorite());
+            viewDataOnScreenToUpdate();
         }
 
         imgDish.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +123,6 @@ public class DishAddEdit extends Fragment {
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Toast.makeText(getContext(), "Hola", Toast.LENGTH_SHORT).show();
 
                 if(isNew){
                     dish = new Dish();
