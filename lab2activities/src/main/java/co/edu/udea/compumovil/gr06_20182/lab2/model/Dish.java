@@ -11,8 +11,8 @@ public class Dish {
 
     private int id;
     private String name;
-    private int price;
-    private int time_preparation;
+    private Integer price;
+    private Integer time_preparation;
     private byte[] image;
     private boolean favorite;
 
@@ -39,11 +39,11 @@ public class Dish {
         this.image = image;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -55,16 +55,24 @@ public class Dish {
         this.name = name;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public String getStrPrice() {
+        return price.toString() + " pesos";
+    }
+
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
     public int getTime_preparation() {
         return time_preparation;
+    }
+
+    public String getStrTime_preparation() {
+        return time_preparation.toString() + " min";
     }
 
     public void setTime_preparation(int time_preparation) {

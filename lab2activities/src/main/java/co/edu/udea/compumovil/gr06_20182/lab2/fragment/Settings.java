@@ -8,12 +8,9 @@ import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.Preference;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Toast;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.R;
 

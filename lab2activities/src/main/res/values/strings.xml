@@ -99,4 +99,5 @@
     <string name="toolbar_title">Platos</string>
     <string name="action_search">Buscar</string>
     <string name="search_hint">Escriba el nombre…</string>
+    <string name="email_exist">El correo ya esta registrado</string>
 </resources>

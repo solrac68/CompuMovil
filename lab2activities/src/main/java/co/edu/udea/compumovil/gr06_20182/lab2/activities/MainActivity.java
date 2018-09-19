@@ -1,6 +1,5 @@
 package co.edu.udea.compumovil.gr06_20182.lab2.activities;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -20,14 +19,15 @@ import java.util.HashMap;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.R;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.About;
-import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Dishes;
+import co.edu.udea.compumovil.gr06_20182.lab2.fragment.DishAddEdit;
+import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Dishfrag;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Drinks;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Profile;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Settings;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SessionManager;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
-public class MainActivity extends AppCompatActivity implements Settings.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements Settings.OnFragmentInteractionListener,Dishfrag.OnFragmentListenerDish,DishAddEdit.OnFragmentListenerDishAddEdit {
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
 
 
         if (savedInstanceState == null) {
-            changeFragment(new Dishes());
+            changeFragment(new Dishfrag());
             nv.getMenu().getItem(0).setActionView(R.layout.menu_dot);
         }
 
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
                 int id = item.getItemId();
                 switch (id){
                     case R.id.dishes:
-                        changeFragment(new Dishes());
+                        changeFragment(Dishfrag.newInstance(true));
                         CURRENT_POSITION = 0;
                         break;
                     case R.id.drinks:
@@ -202,5 +202,16 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
         txtViewHeader.setText(userName);
         txtViewHeaderEmail.setText(userEmail);
         //getSession();
+    }
+
+    //Evento que viene de Dishfrag, con este evento se crea
+    @Override
+    public void onFragmentInteraction(Integer id,Boolean isNew) {
+        changeFragment(DishAddEdit.newInstance(id,isNew));
+    }
+
+    @Override
+    public void onFragmentInteraction(Boolean isNew) {
+        changeFragment(Dishfrag.newInstance(isNew));
     }
 }

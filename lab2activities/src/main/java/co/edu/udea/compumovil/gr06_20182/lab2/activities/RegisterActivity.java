@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -67,6 +68,7 @@ public class RegisterActivity extends AppCompatActivity {  //Activity {
                 ActivityCompat.requestPermissions(
                         RegisterActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},REQUEST_CODE_GALLERY
                 );
+
             }
         });
 
@@ -79,17 +81,23 @@ public class RegisterActivity extends AppCompatActivity {  //Activity {
                     Toast.makeText(RegisterActivity.this,val.getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 }
-                user.setName(edtName.getText().toString().trim());
-                user.setEmail(edtEmail.getText().toString().trim());
-                user.setPassword(edtPassword.getText().toString().trim());
-                user.setImage(imageViewToByte(imageView));
-                try {
-                    sqliteHelper.insertData(user);
-                    Toast.makeText(RegisterActivity.this, getString(R.string.ok_insert), Toast.LENGTH_SHORT).show();
-                    finish();
-                }catch (Exception ex){
-                    ex.printStackTrace();
+                if(!sqliteHelper.chkemail(edtEmail.getText().toString().trim())){
+                    user.setName(edtName.getText().toString().trim());
+                    user.setEmail(edtEmail.getText().toString().trim());
+                    user.setPassword(edtPassword.getText().toString().trim());
+                    user.setImage(imageViewToByte(imageView));
+                    try {
+                        sqliteHelper.insertData(user);
+                        Toast.makeText(RegisterActivity.this, getString(R.string.ok_insert), Toast.LENGTH_SHORT).show();
+                        finish();
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
+                else{
+                    Toast.makeText(RegisterActivity.this, getString(R.string.email_exist), Toast.LENGTH_SHORT).show();
+                }
+
 
             }
         });
