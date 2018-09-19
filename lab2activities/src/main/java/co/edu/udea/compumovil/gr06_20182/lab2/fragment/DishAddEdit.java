@@ -27,6 +27,9 @@ import java.io.InputStream;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.R;
 import co.edu.udea.compumovil.gr06_20182.lab2.activities.RegisterActivity;
+import co.edu.udea.compumovil.gr06_20182.lab2.model.Dish;
+import co.edu.udea.compumovil.gr06_20182.lab2.tools.ImageHelper;
+import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +50,8 @@ public class DishAddEdit extends Fragment {
     private CheckBox checkFavorite;
     private ImageView imgDish;
     private Button btnOk;
+    private Dish dish;
+    public static SqliteHelper sqliteHelper;
     final int REQUEST_CODE_GALLERY = 999;
 
 
@@ -71,7 +76,9 @@ public class DishAddEdit extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             id = getArguments().getInt(ARG_ID);
+            isNew = getArguments().getBoolean(ARG_NEW);
         }
+        sqliteHelper = new SqliteHelper(getContext());
     }
 
     @Override
@@ -87,14 +94,19 @@ public class DishAddEdit extends Fragment {
         imgDish = view.findViewById(R.id.imgDish);
         btnOk = view.findViewById(R.id.btnOk);
 
+        if(!isNew){
+            dish = sqliteHelper.getDishById(id);
+            //Toast.makeText(getContext(), dish.getName(), Toast.LENGTH_SHORT).show();
+            imgDish.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dish.getImage()));
+            txtNameDish.setText(dish.getName());
+            txtTimePreparation.setText(dish.getTime_preparation().toString());
+            txtPrice.setText(dish.getPrice().toString());
+            checkFavorite.setChecked(dish.isFavorite());
+        }
+
         imgDish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Toast.makeText(getContext(), "Hola", Toast.LENGTH_SHORT).show();
-//                ActivityCompat.requestPermissions(
-//                        (DishAddEdit)getContext(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},REQUEST_CODE_GALLERY
-//                );
-
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},REQUEST_CODE_GALLERY);
             }
         });
@@ -102,7 +114,30 @@ public class DishAddEdit extends Fragment {
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "Hola", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Hola", Toast.LENGTH_SHORT).show();
+
+                if(isNew){
+                    dish = new Dish();
+                }
+
+                dish.setName(txtNameDish.getText().toString().trim());
+                dish.setFavorite(checkFavorite.isChecked());
+                dish.setImage(ImageHelper.imageViewToByte(imgDish));
+                dish.setPrice(Integer.parseInt(txtPrice.getText().toString().trim()));
+                dish.setTime_preparation(Integer.parseInt(txtTimePreparation.getText().toString().trim()));
+
+                try {
+                    if(isNew){
+                        sqliteHelper.insertData(dish);
+                    }
+                    else{
+                        sqliteHelper.updateDish(dish);
+                    }
+                    Toast.makeText(getContext(), isNew?getString(R.string.ok_insert):getString(R.string.ok_update), Toast.LENGTH_SHORT).show();
+                    onButtonPressed(isNew);
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -172,4 +207,5 @@ public class DishAddEdit extends Fragment {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 }

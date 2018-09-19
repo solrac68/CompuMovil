@@ -17,6 +17,7 @@ import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.R;
 import co.edu.udea.compumovil.gr06_20182.lab2.adapter.AdapterRecyclerView;
+import co.edu.udea.compumovil.gr06_20182.lab2.adapter.OnMyAdapterClickListener;
 import co.edu.udea.compumovil.gr06_20182.lab2.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
@@ -68,7 +69,13 @@ public class Dishfrag extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        AdapterRecyclerView adapter = new AdapterRecyclerView(dishes);
+        AdapterRecyclerView adapter = new AdapterRecyclerView(dishes, new OnMyAdapterClickListener() {
+            @Override
+            public void onItemClick(Integer position) {
+                //Toast.makeText(getContext(), "Hello: "+ dishes.get(position).getId().toString(), Toast.LENGTH_SHORT).show();
+                onButtonPressed(dishes.get(position).getId(),false);
+            }
+        });
         mRecyclerView.setAdapter(adapter);
 
         fab = vw.findViewById(R.id.fab);

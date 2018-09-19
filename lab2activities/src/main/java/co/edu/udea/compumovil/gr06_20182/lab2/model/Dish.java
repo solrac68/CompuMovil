@@ -67,7 +67,7 @@ public class Dish {
         this.price = price;
     }
 
-    public int getTime_preparation() {
+    public Integer getTime_preparation() {
         return time_preparation;
     }
 

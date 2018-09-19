@@ -149,11 +149,11 @@ public class SqliteHelper extends SQLiteOpenHelper {
     public int updateDish(Dish dish){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(Dish.COLUMN_FAVORITE, dish.isFavorite()?1:0);
+        values.put(Dish.COLUMN_FAVORITE, String.valueOf(dish.isFavorite()?1:0));
         values.put(Dish.COLUMN_NAME, dish.getName());
         values.put(Dish.COLUMN_IMAGE, dish.getImage());
-        values.put(Dish.COLUMN_TIME_PREPARATION, dish.getTime_preparation());
-        values.put(Dish.COLUMN_PRICE, dish.getPrice());
+        values.put(Dish.COLUMN_TIME_PREPARATION, dish.getTime_preparation().toString());
+        values.put(Dish.COLUMN_PRICE, dish.getPrice().toString());
 
         return db.update(Dish.TABLE_NAME, values, Dish.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(dish.getId())});

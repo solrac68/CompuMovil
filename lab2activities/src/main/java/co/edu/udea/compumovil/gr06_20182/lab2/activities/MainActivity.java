@@ -204,12 +204,13 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
         //getSession();
     }
 
-    //Evento que viene de Dishfrag, con este evento se crea
+    //Evento que viene de Dishfrag, con este evento se lanza la creción de la ventana de edición o inserción de registros
     @Override
     public void onFragmentInteraction(Integer id,Boolean isNew) {
         changeFragment(DishAddEdit.newInstance(id,isNew));
     }
 
+    //Evento que viene de DishAddEdit, con este evento se lanza la ventana de visualización de platos, Dishfrag
     @Override
     public void onFragmentInteraction(Boolean isNew) {
         changeFragment(Dishfrag.newInstance(isNew));

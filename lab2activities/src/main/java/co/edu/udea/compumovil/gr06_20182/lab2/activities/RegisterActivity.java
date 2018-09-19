@@ -28,6 +28,7 @@ import java.io.InputStream;
 import co.edu.udea.compumovil.gr06_20182.lab2.R;
 import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
 import co.edu.udea.compumovil.gr06_20182.lab2.model.Validation;
+import co.edu.udea.compumovil.gr06_20182.lab2.tools.ImageHelper;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
 public class RegisterActivity extends AppCompatActivity {  //Activity {
@@ -58,10 +59,9 @@ public class RegisterActivity extends AppCompatActivity {  //Activity {
             }
         });
         Init();
-        Log.d("T","DESPUES DE INIT");
+
         sqliteHelper = new SqliteHelper(this);
-        //sqliteHelper.queryData(User.CREATE_TABLE);
-        Log.d("T","DESPUES DE sqliteHelper");
+
         btnImage.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -85,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity {  //Activity {
                     user.setName(edtName.getText().toString().trim());
                     user.setEmail(edtEmail.getText().toString().trim());
                     user.setPassword(edtPassword.getText().toString().trim());
-                    user.setImage(imageViewToByte(imageView));
+                    user.setImage(ImageHelper.imageViewToByte(imageView));
                     try {
                         sqliteHelper.insertData(user);
                         Toast.makeText(RegisterActivity.this, getString(R.string.ok_insert), Toast.LENGTH_SHORT).show();
@@ -120,10 +120,6 @@ public class RegisterActivity extends AppCompatActivity {  //Activity {
         }
 
         return val;
-    }
-    private byte[] imageViewToByte(ImageView image){
-        Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-        return SqliteHelper.getBitmapAsByteArray(bitmap);
     }
 
     private void Init(){
