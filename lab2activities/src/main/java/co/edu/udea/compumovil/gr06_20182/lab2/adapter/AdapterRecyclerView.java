@@ -6,10 +6,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.R;
@@ -17,14 +20,16 @@ import co.edu.udea.compumovil.gr06_20182.lab2.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
 
-public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerView.DishViewHolder>{
+public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerView.DishViewHolder> implements Filterable{
 
     List<Dish> dishes;
+    List<Dish> dishesFilter;
     OnMyAdapterClickListener onMyAdapterClickListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public AdapterRecyclerView(List<Dish> dishes, OnMyAdapterClickListener onMyAdapterClickListener) {
         this.dishes = dishes;
+        this.dishesFilter = dishes;
         this.onMyAdapterClickListener = onMyAdapterClickListener;
     }
 
@@ -43,11 +48,11 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.dishName.setText(dishes.get(pos).getName());
-        holder.dishPrice.setText(dishes.get(pos).getStrPrice());
-        holder.dishPreparationTime.setText(dishes.get(pos).getStrTime_preparation());
-        holder.dishPhoto.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dishes.get(pos).getImage()));
-        if(dishes.get(pos).isFavorite()){
+        holder.dishName.setText(dishesFilter.get(pos).getName());
+        holder.dishPrice.setText(dishesFilter.get(pos).getStrPrice());
+        holder.dishPreparationTime.setText(dishesFilter.get(pos).getStrTime_preparation());
+        holder.dishPhoto.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dishesFilter.get(pos).getImage()));
+        if(dishesFilter.get(pos).isFavorite()){
             holder.dishFavorite.setVisibility(pos);
         }
 
@@ -56,7 +61,7 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return dishes.size();
+        return dishesFilter.size();
     }
 
 
@@ -87,5 +92,41 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
 
             onMyAdapterClickListener.onItemClick(pos);
         }
+
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    dishesFilter = dishes;
+                } else {
+                    List<Dish> filteredList = new ArrayList<>();
+                    for (Dish row : dishes) {
+
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (row.getName().toLowerCase().contains(charString.toLowerCase()) || row.getStrPrice().contains(charSequence)) {
+                            filteredList.add(row);
+                        }
+                    }
+
+                    dishesFilter = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = dishesFilter;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                dishesFilter = (ArrayList<Dish>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 }

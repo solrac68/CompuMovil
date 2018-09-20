@@ -1,5 +1,7 @@
 package co.edu.udea.compumovil.gr06_20182.lab2.activities;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -9,8 +11,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,12 +47,25 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
     private String userPassword;
     private byte[] image;
     public static SqliteHelper sqliteHelper;
+    private SearchView searchView;
+    private String fragment_current;
 
     // index to identify current nav menu item
     public static int navItemIndex = 0;
 
 
     public static int CURRENT_POSITION = 0;
+    public static String FRAGMENTDISH = "DishFrag";
+    public static String FRAGMENTDISHADDEDIT = "DishAddEdit";
+    public static String FRAGMENTDDRINK = "Drinks";
+    public static String FRAGMENTPROFILE = "Profile";
+    public static String FRAGMENTSETTINGS = "Settings";
+    public static String FRAGMENTABOUT = "About";
+    Dishfrag dishfrag;
+    Drinks drinks;
+    Menu menu;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
 
 
         if (savedInstanceState == null) {
-            changeFragment(new Dishfrag());
+            changeFragment(new Dishfrag(),FRAGMENTDISH);
             nv.getMenu().getItem(0).setActionView(R.layout.menu_dot);
         }
 
@@ -80,19 +99,19 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
                 int id = item.getItemId();
                 switch (id){
                     case R.id.dishes:
-                        changeFragment(Dishfrag.newInstance(true));
+                        changeFragment(Dishfrag.newInstance(true),FRAGMENTDISH);
                         CURRENT_POSITION = 0;
                         break;
                     case R.id.drinks:
-                        changeFragment(new Drinks());
+                        changeFragment(new Drinks(),FRAGMENTDDRINK);
                         CURRENT_POSITION = 1;
                         break;
                     case R.id.profile:
-                        changeFragment(Profile.newInstance(image,userName,userEmail));
+                        changeFragment(Profile.newInstance(image,userName,userEmail),FRAGMENTPROFILE);
                         CURRENT_POSITION = 2;
                         break;
                     case R.id.settings:
-                        changeFragment(Settings.newInstance(userName,userEmail,userPassword));
+                        changeFragment(Settings.newInstance(userName,userEmail,userPassword),FRAGMENTSETTINGS);
                         CURRENT_POSITION = 3;
                         break;
                     case R.id.close_session:
@@ -100,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
                         session.logoutUser();
                         break;
                     case R.id.about:
-                        changeFragment(new About());
+                        changeFragment(new About(),FRAGMENTABOUT);
                         CURRENT_POSITION = 5;
                         break;
 
@@ -111,27 +130,22 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
             }
         });
 
+//        Log.d("MENU","onCreate");
+//        if(menu == null){
+//            Log.d("MENU","es null");
+//        }
     }
 
-    private void changeFragment2(Settings fragment) {
-        // Create transaction
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-
-        // Create new fragment
-        //Fragment fragmentA = new FragmentA();
-        // Replace whatever is in the fragment_container view with this fragment
-        transaction.replace(R.id.frame, fragment);
-
-        // add the transaction to the back stack (optional)
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
-
-        //Closing drawer on item click
-        dl.closeDrawers();
-        invalidateOptionsMenu();
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        Log.d("MENU","onResume");
+//        if(menu == null){
+//            Log.d("MENU","onResume es null");
+//        }
+//        else{
+//            Log.d("MENU","onResume Existe menu");
+//        }
     }
 
     public void removeActionView(int position){
@@ -140,8 +154,8 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
         }
         nv.getMenu().getItem(position).setActionView(R.layout.menu_dot);
     }
-    public void changeFragment(Fragment fragment){
-
+    public void changeFragment(Fragment fragment,String name){
+        fragment_current = name;
         // Create transaction
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
@@ -149,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
         // Create new fragment
         //Fragment fragmentA = new FragmentA();
         // Replace whatever is in the fragment_container view with this fragment
-        transaction.replace(R.id.frame, fragment);
+        transaction.replace(R.id.frame, fragment,fragment_current);
 
         // add the transaction to the back stack (optional)
         transaction.addToBackStack(null);
@@ -159,7 +173,9 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
 
         //Closing drawer on item click
         dl.closeDrawers();
-        invalidateOptionsMenu();
+
+
+        //invalidateOptionsMenu();
 
     }
 
@@ -178,10 +194,24 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+//        if (id == R.id.action_search) {
+//            return true;
+//        }
         if(t.onOptionsItemSelected(item))
             return true;
+
         return super.onOptionsItemSelected(item);
     }
+
+//    @Override
+//    public void onBackPressed() {
+//        if (!searchView.isIconified()) {
+//            searchView.setIconified(true);
+//            return;
+//        }
+//        super.onBackPressed();
+//    }
 
     @Override
     public void onFragmentInteraction(String name,String email, String password) {
@@ -207,12 +237,53 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
     //Evento que viene de Dishfrag, con este evento se lanza la creción de la ventana de edición o inserción de registros
     @Override
     public void onFragmentInteraction(Integer id,Boolean isNew) {
-        changeFragment(DishAddEdit.newInstance(id,isNew));
+        changeFragment(DishAddEdit.newInstance(id,isNew),FRAGMENTDISHADDEDIT);
     }
 
     //Evento que viene de DishAddEdit, con este evento se lanza la ventana de visualización de platos, Dishfrag
     @Override
     public void onFragmentInteraction(Boolean isNew) {
-        changeFragment(Dishfrag.newInstance(isNew));
+        changeFragment(Dishfrag.newInstance(isNew),FRAGMENTDISH);
     }
+
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        super.onCreateOptionsMenu(menu);
+//        this.menu = menu;
+//        Log.d("MENU","onCreateOptionsMenu");
+//        if(fragment_current.equals(FRAGMENTDISH)  ) {
+//            Log.d("MENU",FRAGMENTDISH);
+//            dishfrag = (Dishfrag)
+//                    getSupportFragmentManager().findFragmentByTag(fragment_current);
+//
+//            return filter(menu,dishfrag.getAdapter());
+//        }
+//        else if(fragment_current.equals(FRAGMENTDDRINK)){
+//            drinks = (Drinks)
+//                    getSupportFragmentManager().findFragmentByTag(fragment_current);
+//
+//            //return filter(menu,drinks.getAdapter());
+//
+//            return true;
+//        }
+//        else{
+//            Log.d("MENU","OTRA OPCION");
+//            return false;
+//        }
+//    }
+
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        Log.d("MENU","onPrepareOptionsMenu");
+//
+//        if(this.menu == null){
+//            Log.d("MENU","onPrepareOptionsMenu es null");
+//        }
+//        else{
+//            Log.d("MENU","onPrepareOptionsMenu Existe menu");
+//        }
+//        return true;
+//    }
+
 }
