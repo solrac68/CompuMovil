@@ -195,23 +195,13 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-//        if (id == R.id.action_search) {
-//            return true;
-//        }
+
         if(t.onOptionsItemSelected(item))
             return true;
 
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        if (!searchView.isIconified()) {
-//            searchView.setIconified(true);
-//            return;
-//        }
-//        super.onBackPressed();
-//    }
 
     @Override
     public void onFragmentInteraction(String name,String email, String password) {
@@ -246,44 +236,5 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
         changeFragment(Dishfrag.newInstance(isNew),FRAGMENTDISH);
     }
 
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        super.onCreateOptionsMenu(menu);
-//        this.menu = menu;
-//        Log.d("MENU","onCreateOptionsMenu");
-//        if(fragment_current.equals(FRAGMENTDISH)  ) {
-//            Log.d("MENU",FRAGMENTDISH);
-//            dishfrag = (Dishfrag)
-//                    getSupportFragmentManager().findFragmentByTag(fragment_current);
-//
-//            return filter(menu,dishfrag.getAdapter());
-//        }
-//        else if(fragment_current.equals(FRAGMENTDDRINK)){
-//            drinks = (Drinks)
-//                    getSupportFragmentManager().findFragmentByTag(fragment_current);
-//
-//            //return filter(menu,drinks.getAdapter());
-//
-//            return true;
-//        }
-//        else{
-//            Log.d("MENU","OTRA OPCION");
-//            return false;
-//        }
-//    }
-
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        Log.d("MENU","onPrepareOptionsMenu");
-//
-//        if(this.menu == null){
-//            Log.d("MENU","onPrepareOptionsMenu es null");
-//        }
-//        else{
-//            Log.d("MENU","onPrepareOptionsMenu Existe menu");
-//        }
-//        return true;
-//    }
 
 }
