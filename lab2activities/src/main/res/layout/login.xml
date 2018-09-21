@@ -23,16 +23,6 @@
   							android:layout_marginLeft="10dip"/>
   				<!-- Logo Ends -->
   		</LinearLayout>
-  		<!--  Header Ends -->
-  		<!-- Footer Start -->
-  		<!--<LinearLayout android:id="@+id/footer"-->
-  				<!--android:layout_width="fill_parent"-->
-  				<!--android:layout_height="90dip"-->
-  				<!--android:background="@layout/footer_repeat"-->
-  				<!--android:layout_alignParentBottom="true"-->
-				<!--android:orientation="vertical">-->
-  		<!--</LinearLayout>-->
-  		<!-- Footer Ends -->
 
   		<!-- Login Form -->
 		<LinearLayout
@@ -61,7 +51,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginTop="5dip"
 				android:hint="@string/str_password"
-				android:text="solrac2013"
+				android:text="alien"
 				android:inputType="textPassword"
 				android:singleLine="true" />
 		  <!-- Login button -->	
