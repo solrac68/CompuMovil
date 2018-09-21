@@ -117,8 +117,11 @@ public class DrinkAddEdit extends Fragment {
         });
 
         btnOk.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+
+
 
                 if(isNew){
                     drink = new Drink();
@@ -132,6 +135,7 @@ public class DrinkAddEdit extends Fragment {
                 try {
                     if(isNew){
                         sqliteHelper.insertData(drink);
+                        Toast.makeText(getContext(), "Hola Insert", Toast.LENGTH_SHORT).show();
                     }
                     else{
                         sqliteHelper.updateDrink(drink);

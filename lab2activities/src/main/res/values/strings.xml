@@ -101,4 +101,6 @@
     <string name="search_hint">Escriba el nombre…</string>
     <string name="email_exist">El correo ya esta registrado</string>
     <string name="ok_update">Se actualizó con éxito</string>
+    <string name="drink_name">Nombre de la bebida</string>
+    <string name="unit">Precio (pesos)</string>
 </resources>

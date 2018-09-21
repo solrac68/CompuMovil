@@ -59,16 +59,16 @@ public class SqliteHelper extends SQLiteOpenHelper {
         statement.clearBindings();
     }
 
-    public void insertData(Drink dish){
+    public void insertData(Drink drink){
         SQLiteDatabase database = getWritableDatabase();
 
-        String sql = "INSERT INTO " + Dish.TABLE_NAME + " VALUES (NULL,?,?,?,?)";
+        String sql = "INSERT INTO " + Drink.TABLE_NAME + " VALUES (NULL,?,?,?,?)";
         SQLiteStatement statement = database.compileStatement(sql);
         statement.clearBindings();;
-        statement.bindString(1,dish.getName());
-        statement.bindLong(2,dish.getPrice());
-        statement.bindLong(4,dish.isFavorite()?1:0);
-        statement.bindBlob(5,dish.getImage());
+        statement.bindString(1,drink.getName());
+        statement.bindLong(2,drink.getPrice());
+        statement.bindLong(3,drink.isFavorite()?1:0);
+        statement.bindBlob(4,drink.getImage());
         statement.executeInsert();
         statement.clearBindings();
     }
