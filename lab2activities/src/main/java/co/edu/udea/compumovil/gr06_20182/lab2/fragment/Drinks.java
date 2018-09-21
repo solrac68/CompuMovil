@@ -1,109 +1,183 @@
 package co.edu.udea.compumovil.gr06_20182.lab2.fragment;
 
+
+import android.app.SearchManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filterable;
+import android.widget.Toast;
+
+import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.R;
+import co.edu.udea.compumovil.gr06_20182.lab2.adapter.AdapterRecyclerDrinkView;
+import co.edu.udea.compumovil.gr06_20182.lab2.adapter.OnMyAdapterClickListener;
+import co.edu.udea.compumovil.gr06_20182.lab2.model.Drink;
+import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link Drinks.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link Drinks#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class Drinks extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    List<Drink> drinks;
+    SqliteHelper sqlh;
+    private RecyclerView mRecyclerView;
+    private AdapterRecyclerDrinkView adapter;
+    private FloatingActionButton fab;
+    private Boolean isNew;
+    private static final String ARG_NEW = "estado";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_NAME = "Drinks";
 
-    //private OnFragmentInteractionListener mListener;
+    private OnFragmentListenerDrink mListener;
+
+    private SearchView searchView;
+
 
     public Drinks() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Drinks.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Drinks newInstance(String param1, String param2) {
+    public static Drinks newInstance(Boolean isNew) {
         Drinks fragment = new Drinks();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putBoolean(ARG_NEW, isNew);
         fragment.setArguments(args);
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
+    public void onButtonPressed(Integer id,Boolean isNew) {
+        if (mListener != null) {
+            mListener.onFragmentDrinkInteraction(id,isNew);
         }
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main, menu);
+        filter(menu,adapter);
+
+    }
+
+    void filter(Menu menu,final Filterable filter){
+        //getActivity().getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getActivity().getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // filter recycler view when query submitted
+                filter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                // filter recycler view when text is changed
+                filter.getFilter().filter(query);
+                return false;
+            }
+        });
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_search) {
+            return true;
+        }
+//        if(t.onOptionsItemSelected(item))
+//            return true;
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_drinks, container, false);
+        View vw = inflater.inflate(R.layout.fragment_drinks, container, false);
+        sqlh = new SqliteHelper(getContext());
+        drinks = sqlh.getDrinks();
+
+        mRecyclerView = vw.findViewById(R.id.rv_content_drink);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        adapter = new AdapterRecyclerDrinkView(drinks, new OnMyAdapterClickListener() {
+            @Override
+            public void onItemClick(Integer position) {
+
+                onButtonPressed(drinks.get(position).getId(),false);
+            }
+        });
+        mRecyclerView.setAdapter(adapter);
+
+        fab = vw.findViewById(R.id.fab_drink);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Toast.makeText(getContext(), "Hola", Toast.LENGTH_SHORT).show();
+                // Para crear un nuevo registro de platos..
+                onButtonPressed(-1,true);
+            }
+        });
+
+        return vw;
+
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentListenerDrink) {
+            mListener = (OnFragmentListenerDrink) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
 
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
+    public interface OnFragmentListenerDrink {
+        // TODO: Update argument type and name
+        void onFragmentDrinkInteraction(Integer id,  Boolean isNew);
+    }
+
 }

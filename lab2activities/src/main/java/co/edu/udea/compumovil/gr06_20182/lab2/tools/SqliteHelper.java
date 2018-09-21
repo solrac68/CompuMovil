@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab2.model.Dish;
+import co.edu.udea.compumovil.gr06_20182.lab2.model.Drink;
 import co.edu.udea.compumovil.gr06_20182.lab2.model.User;
 
 public class SqliteHelper extends SQLiteOpenHelper {
@@ -58,18 +59,32 @@ public class SqliteHelper extends SQLiteOpenHelper {
         statement.clearBindings();
     }
 
-    public boolean insertDataSecure(User user){
+    public void insertData(Drink dish){
         SQLiteDatabase database = getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
 
-        contentValues.put(User.COLUMN_NAME,user.getName());
-        contentValues.put(User.COLUMN_PASSWORD,user.getPassword());
-        contentValues.put(User.COLUMN_EMAIL,user.getEmail());
-        contentValues.put(User.COLUMN_IMAGE,user.getImage());
-        long ins = database.insert(User.TABLE_NAME,null,contentValues);
-
-        return !(ins == -1);
+        String sql = "INSERT INTO " + Dish.TABLE_NAME + " VALUES (NULL,?,?,?,?)";
+        SQLiteStatement statement = database.compileStatement(sql);
+        statement.clearBindings();;
+        statement.bindString(1,dish.getName());
+        statement.bindLong(2,dish.getPrice());
+        statement.bindLong(4,dish.isFavorite()?1:0);
+        statement.bindBlob(5,dish.getImage());
+        statement.executeInsert();
+        statement.clearBindings();
     }
+
+//    public boolean insertDataSecure(User user){
+//        SQLiteDatabase database = getWritableDatabase();
+//        ContentValues contentValues = new ContentValues();
+//
+//        contentValues.put(User.COLUMN_NAME,user.getName());
+//        contentValues.put(User.COLUMN_PASSWORD,user.getPassword());
+//        contentValues.put(User.COLUMN_EMAIL,user.getEmail());
+//        contentValues.put(User.COLUMN_IMAGE,user.getImage());
+//        long ins = database.insert(User.TABLE_NAME,null,contentValues);
+//
+//        return !(ins == -1);
+//    }
 
     public Cursor getData(String sql){
         SQLiteDatabase database = getReadableDatabase();
@@ -122,6 +137,28 @@ public class SqliteHelper extends SQLiteOpenHelper {
         return dish;
     }
 
+    public Drink getDrinkById(Integer id){
+        Drink drink = null;
+        SQLiteDatabase database = getReadableDatabase();
+        Cursor cursor = database.query(Drink.TABLE_NAME,
+                new String[]{Drink.COLUMN_ID,Drink.COLUMN_NAME,Drink.COLUMN_PRICE,Drink.COLUMN_FAVORITE,Drink.COLUMN_IMAGE},
+                Drink.COLUMN_ID + "=?",
+                new String[]{id.toString()},null,null,null,null);
+
+        if(cursor != null){
+            cursor.moveToFirst();
+            drink = new Drink(
+                    cursor.getInt(cursor.getColumnIndex(Drink.COLUMN_ID)),
+                    cursor.getString(cursor.getColumnIndex(Drink.COLUMN_NAME)),
+                    cursor.getInt(cursor.getColumnIndex(Drink.COLUMN_PRICE)),
+                    cursor.getInt(cursor.getColumnIndex(Drink.COLUMN_FAVORITE))==1,
+                    cursor.getBlob(cursor.getColumnIndex(Drink.COLUMN_IMAGE))
+            );
+        }
+
+        return drink;
+    }
+
     public List<Dish> getDishes(){
         List<Dish> dishes = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + Dish.TABLE_NAME + " ORDER BY " + Dish.COLUMN_ID + " DESC";
@@ -146,6 +183,29 @@ public class SqliteHelper extends SQLiteOpenHelper {
         return dishes;
     }
 
+    public List<Drink> getDrinks(){
+        List<Drink> drinks = new ArrayList<>();
+        String selectQuery = "SELECT * FROM " + Drink.TABLE_NAME + " ORDER BY " + Drink.COLUMN_ID + " DESC";
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                Drink dish = new Drink(
+                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_ID)),
+                        cursor.getString(cursor.getColumnIndex(Dish.COLUMN_NAME)),
+                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_PRICE)),
+                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_FAVORITE))==1,
+                        cursor.getBlob(cursor.getColumnIndex(Dish.COLUMN_IMAGE))
+                );
+                drinks.add(dish);
+            } while(cursor.moveToNext());
+        }
+
+        return drinks;
+    }
+
     public int updateDish(Dish dish){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -156,6 +216,18 @@ public class SqliteHelper extends SQLiteOpenHelper {
         values.put(Dish.COLUMN_PRICE, dish.getPrice().toString());
 
         return db.update(Dish.TABLE_NAME, values, Dish.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(dish.getId())});
+    }
+
+    public int updateDrink(Drink dish){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(Drink.COLUMN_FAVORITE, String.valueOf(dish.isFavorite()?1:0));
+        values.put(Drink.COLUMN_NAME, dish.getName());
+        values.put(Drink.COLUMN_IMAGE, dish.getImage());
+        values.put(Drink.COLUMN_PRICE, dish.getPrice().toString());
+
+        return db.update(Drink.TABLE_NAME, values, Drink.COLUMN_ID + " = ?",
                 new String[]{String.valueOf(dish.getId())});
     }
 
@@ -188,11 +260,13 @@ public class SqliteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(User.CREATE_TABLE);
         db.execSQL(Dish.CREATE_TABLE);
+        db.execSQL(Drink.CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Dish.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + Drink.TABLE_NAME);
     }
 }

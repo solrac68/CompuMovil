@@ -27,13 +27,19 @@ import co.edu.udea.compumovil.gr06_20182.lab2.R;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.About;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.DishAddEdit;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Dishfrag;
+import co.edu.udea.compumovil.gr06_20182.lab2.fragment.DrinkAddEdit;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Drinks;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Profile;
 import co.edu.udea.compumovil.gr06_20182.lab2.fragment.Settings;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SessionManager;
 import co.edu.udea.compumovil.gr06_20182.lab2.tools.SqliteHelper;
 
-public class MainActivity extends AppCompatActivity implements Settings.OnFragmentInteractionListener,Dishfrag.OnFragmentListenerDish,DishAddEdit.OnFragmentListenerDishAddEdit {
+public class MainActivity extends AppCompatActivity implements
+        Settings.OnFragmentInteractionListener,
+        Dishfrag.OnFragmentListenerDish,
+        DishAddEdit.OnFragmentListenerDishAddEdit,
+        Drinks.OnFragmentListenerDrink,
+        DrinkAddEdit.OnFragmentListenerDrinkAddEdit{
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
@@ -60,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
     public static String FRAGMENTDDRINK = "Drinks";
     public static String FRAGMENTPROFILE = "Profile";
     public static String FRAGMENTSETTINGS = "Settings";
+    public static String FRAGMENTDRINKADDEDIT = "DrinkAddEdit";
     public static String FRAGMENTABOUT = "About";
     Dishfrag dishfrag;
     Drinks drinks;
@@ -103,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
                         CURRENT_POSITION = 0;
                         break;
                     case R.id.drinks:
-                        changeFragment(new Drinks(),FRAGMENTDDRINK);
+                        changeFragment(Drinks.newInstance(true),FRAGMENTDDRINK);
                         CURRENT_POSITION = 1;
                         break;
                     case R.id.profile:
@@ -230,10 +237,22 @@ public class MainActivity extends AppCompatActivity implements Settings.OnFragme
         changeFragment(DishAddEdit.newInstance(id,isNew),FRAGMENTDISHADDEDIT);
     }
 
-    //Evento que viene de DishAddEdit, con este evento se lanza la ventana de visualización de platos, Dishfrag
+    //Evento que viene de DishAddEdit, con este evento se lanza la ventana de visualización de platos Dishfrag
     @Override
     public void onFragmentInteraction(Boolean isNew) {
         changeFragment(Dishfrag.newInstance(isNew),FRAGMENTDISH);
+    }
+
+    //Evento que viene de Dink, con este evento se lanza la ventana de visualizacion de edición o inserción de registro.
+    @Override
+    public void onFragmentDrinkInteraction(Integer id, Boolean isNew) {
+        changeFragment(DrinkAddEdit.newInstance(id,isNew),FRAGMENTDRINKADDEDIT);
+    }
+
+    //Evento que viene de DrinkAddEdit, con este evento se lanza la ventana de visualización de bebidas Drinks
+    @Override
+    public void onFragmentDrinkAddEditInteraction(Boolean isNew) {
+        changeFragment(Drinks.newInstance(isNew),FRAGMENTDDRINK);
     }
 
 
