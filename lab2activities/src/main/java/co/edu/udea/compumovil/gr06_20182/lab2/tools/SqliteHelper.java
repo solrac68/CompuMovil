@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.widget.Toast;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -268,5 +270,10 @@ public class SqliteHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Dish.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + Drink.TABLE_NAME);
+    }
+
+    public void deleteTable(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("delete from " + name);
     }
 }

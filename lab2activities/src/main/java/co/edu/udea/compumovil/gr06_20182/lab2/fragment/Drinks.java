@@ -50,6 +50,11 @@ public class Drinks extends Fragment {
         // Required empty public constructor
     }
 
+    void Initialization(){
+
+    }
+
+
     public static Drinks newInstance(Boolean isNew) {
         Drinks fragment = new Drinks();
         Bundle args = new Bundle();

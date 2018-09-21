@@ -50,6 +50,10 @@ public class Dishfrag extends Fragment {
         // Required empty public constructor
     }
 
+    void Initialization(){
+
+    }
+
     public static Dishfrag newInstance(Boolean isNew) {
         Dishfrag fragment = new Dishfrag();
         Bundle args = new Bundle();
