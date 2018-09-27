@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,7 @@ public class DishAddEdit extends Fragment {
     private Dish dish;
     public static SqliteHelper sqliteHelper;
     final int REQUEST_CODE_GALLERY = 999;
+    final int REQUEST_CODE_PHONE = 998;
 
 
     private OnFragmentListenerDishAddEdit mListener;
@@ -123,6 +125,8 @@ public class DishAddEdit extends Fragment {
         btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},REQUEST_CODE_PHONE);
 
                 if(isNew){
                     dish = new Dish();
@@ -195,6 +199,13 @@ public class DishAddEdit extends Fragment {
                 Toast.makeText(getContext(),getString(R.string.without_access_security),Toast.LENGTH_SHORT).show();
             }
             return;
+        }
+        else if (requestCode == REQUEST_CODE_PHONE){
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                TelephonyManager tMgr = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+                String mPhoneNumber = tMgr.getLine1Number();
+                Toast.makeText(getContext(), mPhoneNumber, Toast.LENGTH_SHORT).show();
+            }
         }
         super.onRequestPermissionsResult(requestCode,permissions,grantResults);
     }

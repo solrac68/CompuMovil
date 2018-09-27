@@ -137,10 +137,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-//        Log.d("MENU","onCreate");
-//        if(menu == null){
-//            Log.d("MENU","es null");
-//        }
     }
 
 
@@ -148,13 +144,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-//        Log.d("MENU","onResume");
-//        if(menu == null){
-//            Log.d("MENU","onResume es null");
-//        }
-//        else{
-//            Log.d("MENU","onResume Existe menu");
-//        }
     }
 
     public void removeActionView(int position){
