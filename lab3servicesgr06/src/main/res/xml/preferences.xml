@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="user_category"
+        android:title="@string/user">
+
+        <EditTextPreference
+            android:dialogTitle="@string/your_name"
+            android:dialogMessage="@string/enter_name"
+            android:inputType="textCapWords"
+            android:key="key_full_name"
+            android:title="@string/name"
+            android:summary="@string/str_name">
+        </EditTextPreference>
+        <EditTextPreference
+            android:dialogTitle="@string/your_email"
+            android:dialogMessage="@string/enter_your_email"
+            android:inputType="textEmailAddress"
+            android:key="key_email"
+            android:title="@string/email_str"
+            android:summary="xyz@gmail.com">
+        </EditTextPreference>
+        <EditTextPreference
+            android:dialogTitle="@string/your_password"
+            android:dialogMessage="@string/enter_your_password"
+            android:inputType="textPassword"
+            android:key="key_password"
+            android:title="@string/password">
+        </EditTextPreference>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="key_notification"
+            android:title="@string/str_enable_notification"
+            android:summary="@string/str_active_notactive"
+            />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="key_sound"
+            android:title="@string/str_enable_sound"
+            android:summary="@string/str_active_notactive_sound"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>

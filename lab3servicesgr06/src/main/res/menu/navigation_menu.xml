@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/dishes"
+        android:icon="@mipmap/baseline_fastfood_black_24"
+        android:title="@string/dishes"/>
+    <item android:id="@+id/drinks"
+        android:icon="@mipmap/baseline_local_drink_black_24"
+        android:title="@string/drinks"/>
+    <item android:id="@+id/profile"
+        android:icon="@mipmap/baseline_person_black_24"
+        android:title="@string/profile"/>
+    <item android:id="@+id/settings"
+        android:icon="@mipmap/ic_settings_black_24dp"
+        android:title="@string/settings"/>
+    <item android:id="@+id/close_session"
+        android:icon="@mipmap/ic_home_black_24dp"
+        android:title="@string/close_session"/>
+    <item android:id="@+id/about"
+        android:icon="@mipmap/ic_notifications_black_24dp"
+        android:title="@string/activity_title_about_us"/>
+</menu>

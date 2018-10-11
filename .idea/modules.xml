@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/CompuMovil.iml" filepath="$PROJECT_DIR$/CompuMovil.iml" />
       <module fileurl="file://$PROJECT_DIR$/Lab1-UI/Lab1-UI.iml" filepath="$PROJECT_DIR$/Lab1-UI/Lab1-UI.iml" />
       <module fileurl="file://$PROJECT_DIR$/lab2activities/lab2activities.iml" filepath="$PROJECT_DIR$/lab2activities/lab2activities.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lab3servicesgr06/lab3servicesgr06.iml" filepath="$PROJECT_DIR$/lab3servicesgr06/lab3servicesgr06.iml" />
     </modules>
   </component>
 </project>
