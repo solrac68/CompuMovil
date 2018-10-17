@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.List;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Drink;
+import co.edu.udea.compumovil.gr06_20182.lab3.model.DrinkDto;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.DrinksDto;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -15,12 +16,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ControllerDrinks implements Callback<DrinksDto> {
-    List<Drink> drinks;
-    OnMyResponse<Drink> onMyResponse;
+    //List<Drink> drinks;
+    OnMyResponse<DrinkDto> onMyResponse;
 
     static final String BASE_URL = "http://www.mocky.io/";
 
-    public ControllerDrinks(OnMyResponse<Drink> onMyResponse){
+    public ControllerDrinks(OnMyResponse<DrinkDto> onMyResponse){
         this.onMyResponse = onMyResponse;
     }
 
@@ -44,9 +45,9 @@ public class ControllerDrinks implements Callback<DrinksDto> {
     @Override
     public void onResponse(Call<DrinksDto> call, Response<DrinksDto> response) {
         if(response.isSuccessful()){
-            drinks = Mapper.MapDrinks(response.body().getDrinks());
+            //drinks = Mapper.MapDrinks(response.body().getDrinks());
             if(this.onMyResponse != null){
-                this.onMyResponse.onResponse(drinks);
+                this.onMyResponse.onResponse(response.body().getDrinks());
             }
         }
     }

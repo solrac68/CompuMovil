@@ -130,7 +130,7 @@ public class DrinkAddEdit extends Fragment {
                 drink.setName(txtNameDrink.getText().toString().trim());
                 drink.setFavorite(checkFavorite.isChecked());
                 drink.setImage(ImageHelper.imageViewToByte(imgDrink));
-                drink.setPrice(Integer.parseInt(txtPrice.getText().toString().trim()));
+                drink.setPrice(Float.parseFloat(txtPrice.getText().toString().trim()));
 
                 try {
                     if(isNew){

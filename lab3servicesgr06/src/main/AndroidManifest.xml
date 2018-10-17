@@ -40,7 +40,7 @@
             android:name=".tools.MyDownloadService"
             android:enabled="true"
             android:exported="true"></service>
-        <meta-data android:name="key_time" android:value="60"/>
+        <meta-data android:name="key_time" android:value="60000"/>
     </application>
 
 </manifest>

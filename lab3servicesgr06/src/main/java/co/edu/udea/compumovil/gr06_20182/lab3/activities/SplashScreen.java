@@ -77,15 +77,15 @@ public class SplashScreen extends Activity {
 
         drinks = new ArrayList<>();
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.fruit);
-        drinks.add(new Drink(1,"Jugo de Frutas",15000,false, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        drinks.add(new Drink(1,"Jugo de Frutas",15000f,false, SqliteHelper.getBitmapAsByteArray(bitmap)));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.beer);
-        drinks.add(new Drink(1,"Cerveza",45000,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        drinks.add(new Drink(1,"Cerveza",45000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.wine);
-        drinks.add(new Drink(1,"Vino",25000,false, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        drinks.add(new Drink(1,"Vino",25000f,false, SqliteHelper.getBitmapAsByteArray(bitmap)));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.orangejuice);
-        drinks.add(new Drink(1,"Jugo de Naranja",15000,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        drinks.add(new Drink(1,"Jugo de Naranja",15000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.soda);
-        drinks.add(new Drink(1,"Soda",10000,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        drinks.add(new Drink(1,"Soda",10000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
         for(Drink d : drinks){
             sqliteHelper.insertData(d);
         }

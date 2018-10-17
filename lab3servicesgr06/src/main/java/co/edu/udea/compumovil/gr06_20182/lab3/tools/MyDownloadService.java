@@ -15,10 +15,12 @@ import java.util.TimerTask;
 
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.DishDto;
+import co.edu.udea.compumovil.gr06_20182.lab3.model.Drink;
+import co.edu.udea.compumovil.gr06_20182.lab3.model.DrinkDto;
 
 public class MyDownloadService extends Service {
     private int counter = 0;
-    private static final int UPDATE_INTERVAL = 10000;
+    private  int UPDATE_INTERVAL;
     private Timer timer = new Timer();
     private String TAG = "MyDownloadService";
 
@@ -29,6 +31,8 @@ public class MyDownloadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        UPDATE_INTERVAL = Helper.getMetaData(getApplicationContext(),"key_time");
 
         doSomethingRepeatedly();
 
@@ -54,25 +58,40 @@ public class MyDownloadService extends Service {
 
             @Override
             public void run() {
-                Log.d(TAG, String.valueOf(++counter) + " segundos");
+                Log.d(TAG, String.valueOf(++counter) + " veces");
 
                 try {
-                    //new BackgroundTask().execute();
                     new ControllerDishes(new OnMyResponse<DishDto>() {
                         @Override
                         public void onResponse(List<DishDto> obj) {
                             if(obj.size() > 0){
-                                //Toast.makeText(getBaseContext(), obj.size() + "Registros descargados con EXITO", Toast.LENGTH_SHORT).show();
-                                Log.d(TAG, obj.size() + " Registros DishDto descargados con EXITO");
+                                //Log.d(TAG, obj.size() + " Registros DishDto descargados con EXITO");
 
-                                new BackgroundTask().execute(obj);
+                                new BackgroundTaskDish().execute(obj);
                             }
                         }
 
                         @Override
                         public void onFailure(String msgError) {
-                            Log.d(TAG, " Falla descarga: " + msgError);
+                            Log.d(TAG, " Falla descarga imagenes platos: " + msgError);
                             //Toast.makeText(getBaseContext(), " FALLA descarga: " + msgError, Toast.LENGTH_SHORT).show();
+                        }
+                    }).start();
+
+                    new ControllerDrinks(new OnMyResponse<DrinkDto>() {
+                        @Override
+                        public void onResponse(List<DrinkDto> obj) {
+                            if(obj.size() > 0){
+                                //Toast.makeText(getBaseContext(), obj.size() + "Registros descargados con EXITO", Toast.LENGTH_SHORT).show();
+                                //Log.d(TAG, obj.size() + " Registros DishDto descargados con EXITO");
+
+                                new BackgroundTaskDrink().execute(obj);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(String msgError) {
+                            Log.d(TAG, " Falla descarga imagenes bebidas: " + msgError);
                         }
                     }).start();
                 } catch (Exception ex) {
@@ -84,27 +103,14 @@ public class MyDownloadService extends Service {
         }, 0, UPDATE_INTERVAL);
     }
 
-    private int DownloadFile() {
-        try {
-            // Simulamos la descarga de un fichero
-            Thread.sleep(150);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
-
-        return 100;
-    }
-
 
     //Clase de Android para hacer tareas en background
-    private class BackgroundTask extends AsyncTask<List<DishDto>, Void, List<Dish>> {
-
-        //private String TAG = "BackgroundTask";
+    private class BackgroundTaskDish extends AsyncTask<List<DishDto>, Void, List<Dish>> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Log.d(TAG, "Iniciando descarga de imagenes");
+            //Log.d(TAG, "Iniciando descarga de imagenes de platos");
         }
 
         @Override
@@ -115,21 +121,33 @@ public class MyDownloadService extends Service {
 
         }
 
-//        @Override
-//        protected void onProgressUpdate(Integer... values) {
-//            super.onProgressUpdate(values);
-//            Log.d(TAG, String.valueOf(values[0]) + "% descargado");
-//            Toast.makeText(getBaseContext(), values[0] + "% descargado", Toast.LENGTH_SHORT).show();
-//        }
-
         @Override
         protected void onPostExecute(List<Dish>  result) {
             super.onPostExecute(result);
-            Log.d(TAG, "Images Descargadas Con Exito: "+ result.size());
-//            Toast.makeText(getBaseContext(),
-//                    "Descargado " + result + " KBytes", Toast.LENGTH_SHORT)
-//                    .show();
-            //stopSelf();
+            Log.d(TAG, "Images Platos descargadas Con Exito: "+ result.size());
+        }
+    }
+
+    private class BackgroundTaskDrink extends AsyncTask<List<DrinkDto>, Void, List<Drink>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //Log.d(TAG, "Iniciando descarga de imagenes de bebidas");
+        }
+
+        @Override
+        protected List<Drink> doInBackground(List<DrinkDto>... drinksDto) {
+            //int count = urls.length;
+
+            return Mapper.MapDrinks(drinksDto[0]);
+
+        }
+
+        @Override
+        protected void onPostExecute(List<Drink>  result) {
+            super.onPostExecute(result);
+            Log.d(TAG, "Images Bebidas Descargadas Con Exito: "+ result.size());
         }
     }
 

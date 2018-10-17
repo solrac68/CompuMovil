@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class ControllerDishes implements Callback<DishesDto> {
-    List<Dish> dishes = null;
+    //List<Dish> dishes = null;
     OnMyResponse<DishDto> onMyResponse;
     static final String BASE_URL = "http://www.mocky.io/";
 

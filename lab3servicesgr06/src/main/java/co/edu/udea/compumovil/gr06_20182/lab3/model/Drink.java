@@ -10,7 +10,7 @@ public class Drink {
 
     private int id;
     private String name;
-    private Integer price;
+    private Float price;
     private byte[] image;
     private boolean favorite;
 
@@ -18,7 +18,7 @@ public class Drink {
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "("
                     + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + COLUMN_NAME + " TEXT,"
-                    + COLUMN_PRICE + " INTEGER,"
+                    + COLUMN_PRICE + " REAL,"
                     + COLUMN_FAVORITE + " INTEGER,"
                     + COLUMN_IMAGE + " BLOB"
                     + ")";
@@ -27,7 +27,7 @@ public class Drink {
 
     }
 
-    public Drink(int id, String name, int price, boolean favorite, byte[] image) {
+    public Drink(int id, String name, Float price, boolean favorite, byte[] image) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -51,7 +51,7 @@ public class Drink {
         this.name = name;
     }
 
-    public Integer getPrice() {
+    public Float getPrice() {
         return price;
     }
 
@@ -59,7 +59,7 @@ public class Drink {
         return price.toString() + " pesos";
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(Float price) {
         this.price = price;
     }
 

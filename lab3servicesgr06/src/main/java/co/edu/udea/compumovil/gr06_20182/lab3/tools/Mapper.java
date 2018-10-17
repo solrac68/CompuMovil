@@ -6,6 +6,9 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,13 +45,27 @@ public class Mapper {
         byte[] image;
         for(DrinkDto drinkDto : drinksdto) {
             drink = new Drink();
-            image = SqliteHelper.getBitmapAsByteArrayFromUrl(drinkDto.getImage());
+            image = drinkDto.getImage() != null ? SqliteHelper.getBitmapAsByteArrayFromUrl(drinkDto.getImage()):null;
             drink.setImage(image);
             drink.setFavorite(false);
             drink.setName(drinkDto.getName());
-            drink.setPrice(Integer.parseInt(drinkDto.getPrice()));
+            drink.setPrice(convertStringToFloat(drinkDto.getPrice()));
             drinks.add(drink);
         }
         return drinks;
+    }
+
+    public static Float convertStringToFloat(String str){
+        Float f;
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        DecimalFormat format = new DecimalFormat("0.#");
+        format.setDecimalFormatSymbols(symbols);
+        try{
+            f = format.parse(str).floatValue();
+        } catch(ParseException ex) {
+            f = Float.parseFloat(str);
+        }
+        return f;
     }
 }

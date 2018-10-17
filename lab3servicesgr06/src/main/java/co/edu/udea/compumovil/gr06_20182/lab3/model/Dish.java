@@ -33,7 +33,7 @@ public class Dish {
 
     }
 
-    public Dish(int id,String name, int price, int time_preparation,boolean favorite, byte[] image, String type) {
+    public Dish(int id,String name, Integer price, int time_preparation,boolean favorite, byte[] image, String type) {
         this.id = id;
         this.name = name;
         this.price = price;

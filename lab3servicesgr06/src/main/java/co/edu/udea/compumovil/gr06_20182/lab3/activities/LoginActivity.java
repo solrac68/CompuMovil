@@ -72,8 +72,8 @@ public class LoginActivity extends AppCompatActivity {  //Activity {
                 else{
                     if(sqliteHelper.chkemailpassword(s1,s2)){
                         User user = sqliteHelper.getUserByEmail(s1);
-                        String time = Helper.getMetaData(getApplicationContext(), "key_time");
-                        Toast.makeText(getApplicationContext(), time,Toast.LENGTH_SHORT).show();
+                        //String time = Helper.getMetaData(getApplicationContext(), "key_time");
+                        //Toast.makeText(getApplicationContext(), time,Toast.LENGTH_SHORT).show();
                         session.createLoginSession(user.getName(),s1,s2);
 //
                         Intent i = new Intent(getApplicationContext(), MainActivity.class);

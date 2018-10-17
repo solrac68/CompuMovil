@@ -7,14 +7,14 @@ import android.os.Bundle;
 import android.util.Log;
 
 public class Helper {
-    public static String getMetaData(Context context, String name) {
+    public static Integer getMetaData(Context context, String name) {
         try {
             ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            return bundle.getString(name);
+            return bundle.getInt(name);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e("TAG", "Unable to load meta-data: " + e.getMessage());
+            return 60000;
         }
-        return null;
     }
 }

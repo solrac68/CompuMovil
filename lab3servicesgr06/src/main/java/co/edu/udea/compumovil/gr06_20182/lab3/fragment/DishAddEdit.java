@@ -30,6 +30,7 @@ import co.edu.udea.compumovil.gr06_20182.lab3.R;
 import co.edu.udea.compumovil.gr06_20182.lab3.activities.RegisterActivity;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab3.tools.ImageHelper;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.Mapper;
 import co.edu.udea.compumovil.gr06_20182.lab3.tools.SqliteHelper;
 
 /**

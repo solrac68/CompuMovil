@@ -59,7 +59,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         SQLiteStatement statement = database.compileStatement(sql);
         statement.clearBindings();;
         statement.bindString(1,dish.getName());
-        statement.bindLong(2,dish.getPrice());
+        statement.bindDouble(2,dish.getPrice());
         statement.bindLong(3,dish.getTime_preparation());
         statement.bindLong(4,dish.isFavorite()?1:0);
         statement.bindBlob(5,dish.getImage());
@@ -75,7 +75,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         SQLiteStatement statement = database.compileStatement(sql);
         statement.clearBindings();;
         statement.bindString(1,drink.getName());
-        statement.bindLong(2,drink.getPrice());
+        statement.bindDouble(2,drink.getPrice());
         statement.bindLong(3,drink.isFavorite()?1:0);
         statement.bindBlob(4,drink.getImage());
         statement.executeInsert();
@@ -160,7 +160,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
             drink = new Drink(
                     cursor.getInt(cursor.getColumnIndex(Drink.COLUMN_ID)),
                     cursor.getString(cursor.getColumnIndex(Drink.COLUMN_NAME)),
-                    cursor.getInt(cursor.getColumnIndex(Drink.COLUMN_PRICE)),
+                    cursor.getFloat(cursor.getColumnIndex(Drink.COLUMN_PRICE)),
                     cursor.getInt(cursor.getColumnIndex(Drink.COLUMN_FAVORITE))==1,
                     cursor.getBlob(cursor.getColumnIndex(Drink.COLUMN_IMAGE))
             );
@@ -206,7 +206,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
                 Drink dish = new Drink(
                         cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_ID)),
                         cursor.getString(cursor.getColumnIndex(Dish.COLUMN_NAME)),
-                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_PRICE)),
+                        cursor.getFloat(cursor.getColumnIndex(Dish.COLUMN_PRICE)),
                         cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_FAVORITE))==1,
                         cursor.getBlob(cursor.getColumnIndex(Dish.COLUMN_IMAGE))
                 );
@@ -271,32 +271,15 @@ public class SqliteHelper extends SQLiteOpenHelper {
         byte[] bitimage = null;
         try{
             URL url = new URL(urlBmp);
-            Log.d("getBitmapAsByteArrayFU", "url: " + url.getPath());
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setDoInput(true);
             connection.connect();
-            Log.d("getBitmapAsByteArrayFU", "url2: " + connection.toString());
             InputStream inputStream = connection.getInputStream();
             Bitmap image = BitmapFactory.decodeStream(inputStream);
             bitimage = getBitmapAsByteArray(image);
-//            Log.d("getBitmapAsByteArrayFU", "bitimage: " + bitimage.toString());
-//            if(uRLConnection == null)
-//            {
-//                Log.d("getBitmapAsByteArrayFU", "uRLConnection: vacío ");
-//            }
-//            else
-//            {
-//                Log.d("getBitmapAsByteArrayFU", "uRLConnection: " + uRLConnection.toString());
-//            }
-            //if(inputStream != null){
-            //    Log.d("getBitmapAsByteArrayFU", "inputStream: " + inputStream.toString());
-            //}
-            //Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 
         }catch (IOException e){
             Log.d("getBitmapAsByteArrayFU", "onFailure: " + e.getMessage());
-            //Log.d("getBitmapAsByteArrayFU", "onFailure: " + e.printStackTrace(););
-            //e.printStackTrace();
         }
         return bitimage;
     }
