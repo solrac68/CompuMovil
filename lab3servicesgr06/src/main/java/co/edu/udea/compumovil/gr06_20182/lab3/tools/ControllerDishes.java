@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Dish;
+import co.edu.udea.compumovil.gr06_20182.lab3.model.DishDto;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.DishesDto;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -19,12 +20,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ControllerDishes implements Callback<DishesDto> {
     List<Dish> dishes = null;
-    OnMyDishesResponse onMyDishesResponse;
-    static final String BASE_URL = "http://www.mocky.io/v2/5bb69bd22e00007b00683715";
+    OnMyResponse<DishDto> onMyResponse;
+    static final String BASE_URL = "http://www.mocky.io/";
 
-    public ControllerDishes(OnMyDishesResponse onMyDishesResponse)
+    public ControllerDishes(OnMyResponse<DishDto> onMyResponse)
     {
-        this.onMyDishesResponse = onMyDishesResponse;
+        this.onMyResponse = onMyResponse;
     }
 
     public void start(){
@@ -39,7 +40,7 @@ public class ControllerDishes implements Callback<DishesDto> {
 
         ApiService apiAPI = retrofit.create(ApiService.class);
 
-        Call<DishesDto> call = apiAPI.getDishes();
+        Call<DishesDto> call = apiAPI.getDishes("5bb69bd22e00007b00683715");
 
         call.enqueue(this);
     }
@@ -48,15 +49,16 @@ public class ControllerDishes implements Callback<DishesDto> {
     @Override
     public void onResponse(Call<DishesDto> call, Response<DishesDto> response) {
         if(response.isSuccessful()){
-            dishes = Mapper.MapDishes(response.body().getFoods());
-            if(this.onMyDishesResponse != null){
-                this.onMyDishesResponse.onResponse(dishes);
+            //dishes = Mapper.MapDishes(response.body().getFoods());
+            if(this.onMyResponse != null){
+                this.onMyResponse.onResponse(response.body().getFoods());
             }
         }
     }
 
     @Override
     public void onFailure(Call<DishesDto> call, Throwable t) {
-        Log.d("ControllerDishes", "onFailure: " + t.getMessage());
+        //Log.d("ControllerDishes", "onFailure: " + t.getMessage());
+        this.onMyResponse.onFailure(t.getMessage());
     }
 }

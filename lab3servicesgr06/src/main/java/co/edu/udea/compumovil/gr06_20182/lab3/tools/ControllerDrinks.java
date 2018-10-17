@@ -16,12 +16,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ControllerDrinks implements Callback<DrinksDto> {
     List<Drink> drinks;
-    OnMyDrinksResponse onMyDrinksResponse;
+    OnMyResponse<Drink> onMyResponse;
 
-    static final String BASE_URL = "http://www.mocky.io/v2/5bb69ce32e00004d00683718";
+    static final String BASE_URL = "http://www.mocky.io/";
 
-    public ControllerDrinks(OnMyDrinksResponse onMyDrinksResponse){
-        this.onMyDrinksResponse = onMyDrinksResponse;
+    public ControllerDrinks(OnMyResponse<Drink> onMyResponse){
+        this.onMyResponse = onMyResponse;
     }
 
     public void start(){
@@ -36,7 +36,7 @@ public class ControllerDrinks implements Callback<DrinksDto> {
 
         ApiService apiAPI = retrofit.create(ApiService.class);
 
-        Call<DrinksDto> call = apiAPI.getDrinks();
+        Call<DrinksDto> call = apiAPI.getDrinks("5bb69ce32e00004d00683718");
 
         call.enqueue(this);
     }
@@ -45,8 +45,8 @@ public class ControllerDrinks implements Callback<DrinksDto> {
     public void onResponse(Call<DrinksDto> call, Response<DrinksDto> response) {
         if(response.isSuccessful()){
             drinks = Mapper.MapDrinks(response.body().getDrinks());
-            if(this.onMyDrinksResponse != null){
-                this.onMyDrinksResponse.onResponse(drinks);
+            if(this.onMyResponse != null){
+                this.onMyResponse.onResponse(drinks);
             }
         }
     }
@@ -54,5 +54,6 @@ public class ControllerDrinks implements Callback<DrinksDto> {
     @Override
     public void onFailure(Call<DrinksDto> call, Throwable t) {
         Log.d("ControllerDrinks", "onFailure: " + t.getMessage());
+        this.onMyResponse.onFailure(t.getMessage());
     }
 }

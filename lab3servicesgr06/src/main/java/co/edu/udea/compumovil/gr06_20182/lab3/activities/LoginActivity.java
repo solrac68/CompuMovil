@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import co.edu.udea.compumovil.gr06_20182.lab3.R;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.User;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.Helper;
 import co.edu.udea.compumovil.gr06_20182.lab3.tools.SessionManager;
 import co.edu.udea.compumovil.gr06_20182.lab3.tools.SqliteHelper;
 
@@ -71,7 +72,8 @@ public class LoginActivity extends AppCompatActivity {  //Activity {
                 else{
                     if(sqliteHelper.chkemailpassword(s1,s2)){
                         User user = sqliteHelper.getUserByEmail(s1);
-                        Toast.makeText(getApplicationContext(), user.getName(),Toast.LENGTH_SHORT).show();
+                        String time = Helper.getMetaData(getApplicationContext(), "key_time");
+                        Toast.makeText(getApplicationContext(), time,Toast.LENGTH_SHORT).show();
                         session.createLoginSession(user.getName(),s1,s2);
 //
                         Intent i = new Intent(getApplicationContext(), MainActivity.class);

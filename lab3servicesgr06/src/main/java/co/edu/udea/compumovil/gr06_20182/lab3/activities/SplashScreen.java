@@ -55,15 +55,15 @@ public class SplashScreen extends Activity {
 
         dishes = new ArrayList<>();
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.fish);
-        dishes.add(new Dish(1,"Lebranch",35000,25,false, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        dishes.add(new Dish(1,"Lebranch",35000,25,false, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.crab);
-        dishes.add(new Dish(1,"Candrejo",45000,35,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        dishes.add(new Dish(1,"Candrejo",45000,35,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.lobster);
-        dishes.add(new Dish(1,"Langosta",65000,45,false, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        dishes.add(new Dish(1,"Langosta",65000,45,false, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sushi);
-        dishes.add(new Dish(1,"Sushi",35000,25,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        dishes.add(new Dish(1,"Sushi",35000,25,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.octopus);
-        dishes.add(new Dish(1,"Pulpo",20000,15,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        dishes.add(new Dish(1,"Pulpo",20000,15,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         for(Dish d : dishes){
             sqliteHelper.insertData(d);
         }

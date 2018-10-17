@@ -13,7 +13,10 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +55,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
     public void insertData(Dish dish){
         SQLiteDatabase database = getWritableDatabase();
 
-        String sql = "INSERT INTO " + Dish.TABLE_NAME + " VALUES (NULL,?,?,?,?,?)";
+        String sql = "INSERT INTO " + Dish.TABLE_NAME + " VALUES (NULL,?,?,?,?,?,?)";
         SQLiteStatement statement = database.compileStatement(sql);
         statement.clearBindings();;
         statement.bindString(1,dish.getName());
@@ -268,10 +271,32 @@ public class SqliteHelper extends SQLiteOpenHelper {
         byte[] bitimage = null;
         try{
             URL url = new URL(urlBmp);
-            Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            Log.d("getBitmapAsByteArrayFU", "url: " + url.getPath());
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            Log.d("getBitmapAsByteArrayFU", "url2: " + connection.toString());
+            InputStream inputStream = connection.getInputStream();
+            Bitmap image = BitmapFactory.decodeStream(inputStream);
             bitimage = getBitmapAsByteArray(image);
+//            Log.d("getBitmapAsByteArrayFU", "bitimage: " + bitimage.toString());
+//            if(uRLConnection == null)
+//            {
+//                Log.d("getBitmapAsByteArrayFU", "uRLConnection: vacío ");
+//            }
+//            else
+//            {
+//                Log.d("getBitmapAsByteArrayFU", "uRLConnection: " + uRLConnection.toString());
+//            }
+            //if(inputStream != null){
+            //    Log.d("getBitmapAsByteArrayFU", "inputStream: " + inputStream.toString());
+            //}
+            //Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
         }catch (IOException e){
             Log.d("getBitmapAsByteArrayFU", "onFailure: " + e.getMessage());
+            //Log.d("getBitmapAsByteArrayFU", "onFailure: " + e.printStackTrace(););
+            //e.printStackTrace();
         }
         return bitimage;
     }

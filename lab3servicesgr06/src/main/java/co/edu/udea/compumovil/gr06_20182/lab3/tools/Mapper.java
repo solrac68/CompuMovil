@@ -16,12 +16,14 @@ import co.edu.udea.compumovil.gr06_20182.lab3.model.DrinkDto;
 
 public class Mapper {
     public static List<Dish> MapDishes(List<DishDto> dishesdto) {
+
         List<Dish> dishes = new ArrayList<>();
         Dish dish;
         byte[] image;
         for(DishDto dishdto : dishesdto) {
             dish = new Dish();
-            image = SqliteHelper.getBitmapAsByteArrayFromUrl(dishdto.getImage());
+            //Log.d("MAPPER", dishdto.getImage()!=null?dishdto.getImage():"");
+            image = dishdto.getImage() != null ? SqliteHelper.getBitmapAsByteArrayFromUrl(dishdto.getImage()): null;
             dish.setImage(image);
             dish.setFavorite(false);
             dish.setName(dishdto.getName());

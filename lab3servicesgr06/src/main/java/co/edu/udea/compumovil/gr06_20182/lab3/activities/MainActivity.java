@@ -2,6 +2,7 @@ package co.edu.udea.compumovil.gr06_20182.lab3.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -31,6 +32,7 @@ import co.edu.udea.compumovil.gr06_20182.lab3.fragment.DrinkAddEdit;
 import co.edu.udea.compumovil.gr06_20182.lab3.fragment.Drinks;
 import co.edu.udea.compumovil.gr06_20182.lab3.fragment.Profile;
 import co.edu.udea.compumovil.gr06_20182.lab3.fragment.Settings;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.MyDownloadService;
 import co.edu.udea.compumovil.gr06_20182.lab3.tools.SessionManager;
 import co.edu.udea.compumovil.gr06_20182.lab3.tools.SqliteHelper;
 
@@ -122,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements
                         CURRENT_POSITION = 3;
                         break;
                     case R.id.close_session:
+                        Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
+                        stopService(intentMemoryService);
                         finish();
                         session.logoutUser();
                         break;
@@ -137,6 +141,9 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
+        // Iniciar servicio
+        Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
+        startService(intentMemoryService);
     }
 
 
