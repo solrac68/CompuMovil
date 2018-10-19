@@ -85,7 +85,12 @@ public class RegisterActivity extends AppCompatActivity {  //Activity {
                     user.setName(edtName.getText().toString().trim());
                     user.setEmail(edtEmail.getText().toString().trim());
                     user.setPassword(edtPassword.getText().toString().trim());
-                    user.setImage(ImageHelper.imageViewToByte(imageView));
+                    try{
+                        user.setImage(ImageHelper.imageViewToByte(imageView));
+                    }catch(Exception e){
+                        user.setImage(SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.user2)));
+                    }
+
                     try {
                         sqliteHelper.insertData(user);
                         Toast.makeText(RegisterActivity.this, getString(R.string.ok_insert), Toast.LENGTH_SHORT).show();

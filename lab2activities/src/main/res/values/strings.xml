@@ -103,4 +103,5 @@
     <string name="ok_update">Se actualizó con éxito</string>
     <string name="drink_name">Nombre de la bebida</string>
     <string name="unit">Precio (pesos)</string>
+    <string name="login">Ingrese a su cuenta</string>
 </resources>
