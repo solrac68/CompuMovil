@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ public class DrinkAddEdit extends Fragment {
     private Drink drink;
     public static SqliteHelper sqliteHelper;
     final int REQUEST_CODE_GALLERY = 999;
+    final String TAG = "DrinkAddEdit";
 
 
     private OnFragmentListenerDrinkAddEdit mListener;
@@ -122,14 +124,23 @@ public class DrinkAddEdit extends Fragment {
             public void onClick(View view) {
 
 
-
                 if(isNew){
                     drink = new Drink();
+                    //Log.d(TAG, " Antes: " + drink.getId());
+                    drink.setId(sqliteHelper.getNextIdDrink());
+                    //Log.d(TAG, " Id: " + drink.getId());
                 }
 
                 drink.setName(txtNameDrink.getText().toString().trim());
                 drink.setFavorite(checkFavorite.isChecked());
-                drink.setImage(ImageHelper.imageViewToByte(imgDrink));
+
+                try{
+                    drink.setImage(ImageHelper.imageViewToByte(imgDrink));
+                }catch (Exception e){
+                    drink.setImage(SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fruit)));
+                }
+
+
                 drink.setPrice(Float.parseFloat(txtPrice.getText().toString().trim()));
 
                 try {
@@ -143,6 +154,7 @@ public class DrinkAddEdit extends Fragment {
                     Toast.makeText(getContext(), isNew?getString(R.string.ok_insert):getString(R.string.ok_update), Toast.LENGTH_SHORT).show();
                     onButtonPressed(isNew);
                 }catch (Exception ex){
+                    Log.d(TAG, " Error: " + ex.getMessage());
                     ex.printStackTrace();
                 }
             }

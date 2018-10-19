@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,7 @@ public class DishAddEdit extends Fragment {
     public static SqliteHelper sqliteHelper;
     final int REQUEST_CODE_GALLERY = 999;
     final int REQUEST_CODE_PHONE = 998;
+    final String TAG = "DishAddEdit";
 
 
     private OnFragmentListenerDishAddEdit mListener;
@@ -131,17 +133,30 @@ public class DishAddEdit extends Fragment {
 
                 if(isNew){
                     dish = new Dish();
+                    dish.setId(sqliteHelper.getNextIdDish());
+                    dish.setType("H");
                 }
 
                 dish.setName(txtNameDish.getText().toString().trim());
                 dish.setFavorite(checkFavorite.isChecked());
-                dish.setImage(ImageHelper.imageViewToByte(imgDish));
+
+                try{
+                    dish.setImage(ImageHelper.imageViewToByte(imgDish));
+                }catch(Exception e)
+                {
+                    dish.setImage(SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.octopus)));
+                }
+
+                //byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fish));
+
                 dish.setPrice(Integer.parseInt(txtPrice.getText().toString().trim()));
                 dish.setTime_preparation(Integer.parseInt(txtTimePreparation.getText().toString().trim()));
 
                 try {
                     if(isNew){
+                        Log.d(TAG, " Antes: " + dish.getId());
                         sqliteHelper.insertData(dish);
+                        Log.d(TAG, " Id: " + dish.getId());
                     }
                     else{
                         sqliteHelper.updateDish(dish);
@@ -149,6 +164,7 @@ public class DishAddEdit extends Fragment {
                     Toast.makeText(getContext(), isNew?getString(R.string.ok_insert):getString(R.string.ok_update), Toast.LENGTH_SHORT).show();
                     onButtonPressed(isNew);
                 }catch (Exception ex){
+                    Log.d(TAG, " Error: " + ex.getMessage());
                     ex.printStackTrace();
                 }
             }

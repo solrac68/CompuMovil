@@ -26,6 +26,7 @@ public class Mapper {
         Dish dish;
         byte[] image;
         Integer id = 0;
+        Integer cont = 0;
         for(DishDto dishdto : dishesdto) {
             dish = new Dish();
             //Log.d("MAPPER", dishdto.getImage()!=null?dishdto.getImage():"");
@@ -37,8 +38,11 @@ public class Mapper {
             dish.setPrice(dishdto.getPrice());
             dish.setTime_preparation(dishdto.getTime());
             dish.setType(dishdto.getType());
-
             dishes.add(dish);
+
+            if(++cont == 10){
+                break;
+            }
         }
         return dishes;
     }
@@ -48,6 +52,7 @@ public class Mapper {
         Drink drink;
         byte[] image;
         Integer id = 0;
+        Integer cont = 0;
         for(DrinkDto drinkDto : drinksdto) {
             drink = new Drink();
             image = drinkDto.getImage() != null ? SqliteHelper.getBitmapAsByteArrayFromUrl(drinkDto.getImage()):null;
@@ -57,6 +62,9 @@ public class Mapper {
             drink.setName(drinkDto.getName());
             drink.setPrice(convertStringToFloat(drinkDto.getPrice()));
             drinks.add(drink);
+            if(++cont == 10){
+                break;
+            }
         }
         return drinks;
     }

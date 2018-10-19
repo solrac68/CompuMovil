@@ -18,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Dish;
@@ -319,6 +320,29 @@ public class SqliteHelper extends SQLiteOpenHelper {
             this.insertData(d);
         }
 
+    }
+
+
+    public Integer getNextIdDrink(){
+        List<Drink> drinks = this.getDrinks();
+        Integer idMax = 0;
+        for(Drink drink:drinks){
+            if(idMax < drink.getId()){
+                idMax = drink.getId();
+            }
+        }
+        return idMax+1;
+    }
+
+    public Integer getNextIdDish(){
+        List<Dish> dishes = this.getDishes();
+        Integer idMax = 0;
+        for(Dish dish:dishes){
+            if(idMax < dish.getId()){
+                idMax = dish.getId();
+            }
+        }
+        return idMax+1;
     }
 
 }
