@@ -3,17 +3,22 @@ package co.edu.udea.compumovil.gr06_20182.lab3.fragment;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filterable;
@@ -25,6 +30,10 @@ import co.edu.udea.compumovil.gr06_20182.lab3.R;
 import co.edu.udea.compumovil.gr06_20182.lab3.adapter.AdapterRecyclerView;
 import co.edu.udea.compumovil.gr06_20182.lab3.adapter.OnMyAdapterClickListener;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Dish;
+import co.edu.udea.compumovil.gr06_20182.lab3.model.DishDto;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.ControllerDishes;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.Mapper;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.OnMyResponse;
 import co.edu.udea.compumovil.gr06_20182.lab3.tools.SqliteHelper;
 
 /**
@@ -142,6 +151,8 @@ public class Dishfrag extends Fragment {
             @Override
             public void onItemClick(Integer position) {
                 //Toast.makeText(getContext(), "Hello: "+ dishes.get(position).getId().toString(), Toast.LENGTH_SHORT).show();
+                //dishes = sqlh.getDishes();
+                Log.d("DISHFRAG", "Id: " + dishes.get(position).getId());
                 onButtonPressed(dishes.get(position).getId(),false);
             }
         });
@@ -154,6 +165,38 @@ public class Dishfrag extends Fragment {
                 //Toast.makeText(getContext(), "Hola", Toast.LENGTH_SHORT).show();
                 // Para crear un nuevo registro de platos..
                 onButtonPressed(-1,true);
+            }
+        });
+
+        mRecyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
+            @Override
+            public boolean onFling(int i, int i1) {
+                Log.d("onFling", "onFling: " + Integer.toString(i) + Integer.toString(i1));
+                Toast.makeText(getContext(), "Se inicia descarga de platos .. ",Toast.LENGTH_SHORT).show();
+
+                ///----
+                try {
+                    new ControllerDishes(new OnMyResponse<DishDto>() {
+                        @Override
+                        public void onResponse(List<DishDto> obj) {
+
+                            if(obj.size() > 0){
+                                new BackgroundTaskDish().execute(obj);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(String msgError) {
+                            Log.d("DishFrag", " Falla descarga imagenes platos: " + msgError);
+                        }
+                    }).start();
+
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                ///----
+                return false;
             }
         });
 
@@ -186,5 +229,41 @@ public class Dishfrag extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Integer id, Boolean isNew);
     }
+
+    private class BackgroundTaskDish extends AsyncTask<List<DishDto>, Void, List<Dish>> {
+
+        SqliteHelper sqliteHelper;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //Log.d(TAG, "Iniciando descarga de imagenes de platos");
+        }
+
+        @Override
+        protected List<Dish> doInBackground(List<DishDto>... dishesDto) {
+            //int count = urls.length;
+            byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fish));
+            sqliteHelper = new SqliteHelper(getContext());
+            List<Dish>  dishes = Mapper.MapDishes(dishesDto[0]);
+            for(Dish d:dishes){
+                if(d.getImage() == null){
+                    d.setImage(bitmap);
+                }
+            }
+
+            sqliteHelper.initializationDishes(dishes);
+            return dishes;
+
+        }
+
+        @Override
+        protected void onPostExecute(List<Dish>  result) {
+            super.onPostExecute(result);
+
+            Log.d("DishFrag", "Images Platos descargadas Con Exito: "+ result.size());
+            Toast.makeText(getContext(), "Images Platos descargadas Con Exito: "+ result.size(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
 }

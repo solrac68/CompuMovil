@@ -14,6 +14,7 @@ import co.edu.udea.compumovil.gr06_20182.lab3.R;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Drink;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.User;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.MyDownloadService;
 import co.edu.udea.compumovil.gr06_20182.lab3.tools.SqliteHelper;
 
 public class SplashScreen extends Activity {
@@ -30,14 +31,17 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
+        startService(intentMemoryService);
+
 
 
         new Handler().postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                InitializationDishes();
-                InitializationDrinks();
+                //InitializationDishes();
+                //InitializationDrinks();
                 InitializationUser();
                 Intent i = new Intent(SplashScreen.this, LoginActivity.class);
                 startActivity(i);
@@ -51,8 +55,6 @@ public class SplashScreen extends Activity {
         //Drink drink = new Drink()
         sqliteHelper = new SqliteHelper(getApplicationContext());
 
-        sqliteHelper.deleteTable(Dish.TABLE_NAME);
-
         dishes = new ArrayList<>();
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.fish);
         dishes.add(new Dish(1,"Lebranch",35000,25,false, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
@@ -64,16 +66,14 @@ public class SplashScreen extends Activity {
         dishes.add(new Dish(1,"Sushi",35000,25,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.octopus);
         dishes.add(new Dish(1,"Pulpo",20000,15,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
-        for(Dish d : dishes){
-            sqliteHelper.insertData(d);
-        }
+
+        sqliteHelper.initializationDishes(dishes);
+
 
     }
 
     void InitializationDrinks(){
         sqliteHelper = new SqliteHelper(getApplicationContext());
-
-        sqliteHelper.deleteTable(Drink.TABLE_NAME);
 
         drinks = new ArrayList<>();
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.fruit);
@@ -86,9 +86,9 @@ public class SplashScreen extends Activity {
         drinks.add(new Drink(1,"Jugo de Naranja",15000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.soda);
         drinks.add(new Drink(1,"Soda",10000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
-        for(Drink d : drinks){
-            sqliteHelper.insertData(d);
-        }
+
+        sqliteHelper.initializationDrinks(drinks);
+
     }
 
     void InitializationUser(){

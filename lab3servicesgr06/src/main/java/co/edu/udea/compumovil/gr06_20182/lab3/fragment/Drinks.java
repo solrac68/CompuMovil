@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -155,6 +156,15 @@ public class Drinks extends Fragment {
                 //Toast.makeText(getContext(), "Hola", Toast.LENGTH_SHORT).show();
                 // Para crear un nuevo registro de platos..
                 onButtonPressed(-1,true);
+            }
+        });
+
+        mRecyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
+            @Override
+            public boolean onFling(int i, int i1) {
+                Log.d("onFling", "onFling: " + Integer.toString(i) + Integer.toString(i1));
+                Toast.makeText(getContext(), "Se inicia descarga de bebidas .. ",Toast.LENGTH_SHORT).show();
+                return false;
             }
         });
 

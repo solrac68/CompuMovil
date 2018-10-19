@@ -2,6 +2,8 @@ package co.edu.udea.compumovil.gr06_20182.lab3.tools;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
@@ -12,7 +14,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 
+import co.edu.udea.compumovil.gr06_20182.lab3.R;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.DishDto;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Drink;
@@ -23,6 +27,7 @@ public class MyDownloadService extends Service {
     private  int UPDATE_INTERVAL;
     private Timer timer = new Timer();
     private String TAG = "MyDownloadService";
+    SqliteHelper sqliteHelper;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -64,8 +69,9 @@ public class MyDownloadService extends Service {
                     new ControllerDishes(new OnMyResponse<DishDto>() {
                         @Override
                         public void onResponse(List<DishDto> obj) {
+
                             if(obj.size() > 0){
-                                //Log.d(TAG, obj.size() + " Registros DishDto descargados con EXITO");
+                                Log.d(TAG, obj.size() + " Registros DishDto descargados con EXITO");
 
                                 new BackgroundTaskDish().execute(obj);
                             }
@@ -116,8 +122,17 @@ public class MyDownloadService extends Service {
         @Override
         protected List<Dish> doInBackground(List<DishDto>... dishesDto) {
             //int count = urls.length;
+            byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fish));
+            sqliteHelper = new SqliteHelper(getApplicationContext());
+            List<Dish>  dishes = Mapper.MapDishes(dishesDto[0]);
+            for(Dish d:dishes){
+                if(d.getImage() == null){
+                    d.setImage(bitmap);
+                }
+            }
 
-            return Mapper.MapDishes(dishesDto[0]);
+            sqliteHelper.initializationDishes(dishes);
+            return dishes;
 
         }
 
@@ -138,9 +153,18 @@ public class MyDownloadService extends Service {
 
         @Override
         protected List<Drink> doInBackground(List<DrinkDto>... drinksDto) {
-            //int count = urls.length;
+            byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fruit));
 
-            return Mapper.MapDrinks(drinksDto[0]);
+            sqliteHelper = new SqliteHelper(getApplicationContext());
+            List<Drink>  drinks = Mapper.MapDrinks(drinksDto[0]);
+            for(Drink d:drinks){
+                if(d.getImage() == null){
+                    d.setImage(bitmap);
+                }
+            }
+            sqliteHelper.initializationDrinks(drinks);
+
+            return drinks;
 
         }
 

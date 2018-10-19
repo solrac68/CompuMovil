@@ -55,15 +55,16 @@ public class SqliteHelper extends SQLiteOpenHelper {
     public void insertData(Dish dish){
         SQLiteDatabase database = getWritableDatabase();
 
-        String sql = "INSERT INTO " + Dish.TABLE_NAME + " VALUES (NULL,?,?,?,?,?,?)";
+        String sql = "INSERT INTO " + Dish.TABLE_NAME + " VALUES (?,?,?,?,?,?,?)";
         SQLiteStatement statement = database.compileStatement(sql);
-        statement.clearBindings();;
-        statement.bindString(1,dish.getName());
-        statement.bindDouble(2,dish.getPrice());
-        statement.bindLong(3,dish.getTime_preparation());
-        statement.bindLong(4,dish.isFavorite()?1:0);
-        statement.bindBlob(5,dish.getImage());
-        statement.bindString(6,dish.getType());
+        statement.clearBindings();
+        statement.bindLong(1,dish.getId());
+        statement.bindString(2,dish.getName());
+        statement.bindDouble(3,dish.getPrice());
+        statement.bindLong(4,dish.getTime_preparation());
+        statement.bindLong(5,dish.isFavorite()?1:0);
+        if(dish.getImage() != null) statement.bindBlob(6,dish.getImage());
+        statement.bindString(7,dish.getType());
         statement.executeInsert();
         statement.clearBindings();
     }
@@ -71,13 +72,14 @@ public class SqliteHelper extends SQLiteOpenHelper {
     public void insertData(Drink drink){
         SQLiteDatabase database = getWritableDatabase();
 
-        String sql = "INSERT INTO " + Drink.TABLE_NAME + " VALUES (NULL,?,?,?,?)";
+        String sql = "INSERT INTO " + Drink.TABLE_NAME + " VALUES (?,?,?,?,?)";
         SQLiteStatement statement = database.compileStatement(sql);
-        statement.clearBindings();;
-        statement.bindString(1,drink.getName());
-        statement.bindDouble(2,drink.getPrice());
-        statement.bindLong(3,drink.isFavorite()?1:0);
-        statement.bindBlob(4,drink.getImage());
+        statement.clearBindings();
+        statement.bindLong(1,drink.getId());
+        statement.bindString(2,drink.getName());
+        statement.bindDouble(3,drink.getPrice());
+        statement.bindLong(4,drink.isFavorite()?1:0);
+        if(drink.getImage() != null) statement.bindBlob(5,drink.getImage());
         statement.executeInsert();
         statement.clearBindings();
     }
@@ -303,4 +305,20 @@ public class SqliteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("delete from " + name);
     }
+
+    public void initializationDishes(List<Dish> dishes){
+        this.deleteTable(Dish.TABLE_NAME);
+        for(Dish d : dishes){
+            this.insertData(d);
+        }
+    }
+
+    public void initializationDrinks(List<Drink> drinks){
+        this.deleteTable(Drink.TABLE_NAME);
+        for(Drink d : drinks){
+            this.insertData(d);
+        }
+
+    }
+
 }

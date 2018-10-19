@@ -8,14 +8,17 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Filterable;
 import android.widget.TextView;
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,8 +128,8 @@ public class MainActivity extends AppCompatActivity implements
                         CURRENT_POSITION = 3;
                         break;
                     case R.id.close_session:
-                        Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
-                        stopService(intentMemoryService);
+                        //Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
+                        //stopService(intentMemoryService);
                         finish();
                         session.logoutUser();
                         break;
@@ -137,14 +141,20 @@ public class MainActivity extends AppCompatActivity implements
                     default:
                 }
                 removeActionView(CURRENT_POSITION);
+
                 return true;
             }
         });
 
+
         // Iniciar servicio
-        Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
-        startService(intentMemoryService);
+        //Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
+        //startService(intentMemoryService);
+
+
     }
+
+
 
 
 
@@ -251,6 +261,25 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onFragmentDrinkAddEditInteraction(Boolean isNew) {
         changeFragment(Drinks.newInstance(isNew),FRAGMENTDDRINK);
+    }
+
+
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String DEBUG_TAG = "Gestures";
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+            Log.d(DEBUG_TAG,"onDown: " + event.toString());
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2,
+                               float velocityX, float velocityY) {
+            Log.d(DEBUG_TAG, "onFling: " + event1.toString() + event2.toString());
+            return true;
+        }
     }
 
 

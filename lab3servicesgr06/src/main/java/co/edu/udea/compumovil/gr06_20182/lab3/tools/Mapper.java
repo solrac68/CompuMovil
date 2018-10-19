@@ -12,10 +12,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import co.edu.udea.compumovil.gr06_20182.lab3.R;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.DishDto;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Drink;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.DrinkDto;
+
 
 public class Mapper {
     public static List<Dish> MapDishes(List<DishDto> dishesdto) {
@@ -23,10 +25,12 @@ public class Mapper {
         List<Dish> dishes = new ArrayList<>();
         Dish dish;
         byte[] image;
+        Integer id = 0;
         for(DishDto dishdto : dishesdto) {
             dish = new Dish();
             //Log.d("MAPPER", dishdto.getImage()!=null?dishdto.getImage():"");
             image = dishdto.getImage() != null ? SqliteHelper.getBitmapAsByteArrayFromUrl(dishdto.getImage()): null;
+            dish.setId(++id);
             dish.setImage(image);
             dish.setFavorite(false);
             dish.setName(dishdto.getName());
@@ -43,9 +47,11 @@ public class Mapper {
         List<Drink> drinks = new ArrayList<>();
         Drink drink;
         byte[] image;
+        Integer id = 0;
         for(DrinkDto drinkDto : drinksdto) {
             drink = new Drink();
             image = drinkDto.getImage() != null ? SqliteHelper.getBitmapAsByteArrayFromUrl(drinkDto.getImage()):null;
+            drink.setId(++id);
             drink.setImage(image);
             drink.setFavorite(false);
             drink.setName(drinkDto.getName());

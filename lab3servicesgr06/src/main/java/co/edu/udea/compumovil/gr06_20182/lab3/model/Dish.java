@@ -20,7 +20,7 @@ public class Dish {
 
     public static final String CREATE_TABLE =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "("
-                    + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + COLUMN_ID + " INTEGER PRIMARY KEY,"
                     + COLUMN_NAME + " TEXT,"
                     + COLUMN_PRICE + " INTEGER,"
                     + COLUMN_TIME_PREPARATION + " INTEGER,"
