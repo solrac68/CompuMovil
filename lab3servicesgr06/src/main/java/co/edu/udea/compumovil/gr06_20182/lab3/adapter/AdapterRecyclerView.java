@@ -33,6 +33,14 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
         this.onMyAdapterClickListener = onMyAdapterClickListener;
     }
 
+    public void updateAdapter(List<Dish> dishes){
+        this.dishes.clear();
+        this.dishes = dishes;
+        this.dishesFilter = dishes;
+        //this.notifyData
+        this.notifyDataSetChanged();
+    }
+
     // Create new views (invoked by the layout manager)
     @Override
     public DishViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

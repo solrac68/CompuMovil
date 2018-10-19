@@ -139,8 +139,9 @@ public class Dishfrag extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View vw = inflater.inflate(R.layout.fragment_dishes, container, false);
+
         sqlh = new SqliteHelper(getContext());
-        dishes = sqlh.getDishes();
+        this.dishes = sqlh.getDishes();
 
         mRecyclerView = vw.findViewById(R.id.rv_content);
 
@@ -157,6 +158,9 @@ public class Dishfrag extends Fragment {
             }
         });
         mRecyclerView.setAdapter(adapter);
+
+        //mRecyclerView.removeViewAt(1);
+        //adapter.notifyItemChanged();
 
         fab = vw.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -259,9 +263,10 @@ public class Dishfrag extends Fragment {
         @Override
         protected void onPostExecute(List<Dish>  result) {
             super.onPostExecute(result);
-
+            dishes = result;
+            adapter.updateAdapter(result);
             Log.d("DishFrag", "Images Platos descargadas Con Exito: "+ result.size());
-            Toast.makeText(getContext(), "Images Platos descargadas Con Exito: "+ result.size(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), result.size() + " imagenes de platos descargadas con éxito",Toast.LENGTH_SHORT).show();
         }
     }
 

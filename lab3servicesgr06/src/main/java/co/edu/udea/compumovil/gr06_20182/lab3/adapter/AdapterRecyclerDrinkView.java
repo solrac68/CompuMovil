@@ -32,6 +32,14 @@ public class AdapterRecyclerDrinkView extends RecyclerView.Adapter<AdapterRecycl
         this.onMyAdapterClickListener = onMyAdapterClickListener;
     }
 
+    public void updateAdapter(List<Drink> drinks){
+        this.drinks.clear();
+        this.drinks = drinks;
+        this.drinksFilter = drinks;
+        //this.notifyData
+        this.notifyDataSetChanged();
+    }
+
     // Create new views (invoked by the layout manager)
     @Override
     public DishViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

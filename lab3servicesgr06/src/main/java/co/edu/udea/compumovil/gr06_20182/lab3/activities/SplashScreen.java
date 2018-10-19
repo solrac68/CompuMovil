@@ -19,7 +19,7 @@ import co.edu.udea.compumovil.gr06_20182.lab3.tools.SqliteHelper;
 
 public class SplashScreen extends Activity {
 
-    private static int SPLASH_TIME_OUT = 1000;
+    private static int SPLASH_TIME_OUT = 2000;
     List<Dish> dishes;
     List<Drink> drinks;
     User user;
@@ -59,13 +59,13 @@ public class SplashScreen extends Activity {
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.fish);
         dishes.add(new Dish(1,"Lebranch",35000,25,false, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.crab);
-        dishes.add(new Dish(1,"Candrejo",45000,35,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
+        dishes.add(new Dish(2,"Candrejo",45000,35,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.lobster);
-        dishes.add(new Dish(1,"Langosta",65000,45,false, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
+        dishes.add(new Dish(3,"Langosta",65000,45,false, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sushi);
-        dishes.add(new Dish(1,"Sushi",35000,25,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
+        dishes.add(new Dish(4,"Sushi",35000,25,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.octopus);
-        dishes.add(new Dish(1,"Pulpo",20000,15,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
+        dishes.add(new Dish(5,"Pulpo",20000,15,true, SqliteHelper.getBitmapAsByteArray(bitmap),"E"));
 
         sqliteHelper.initializationDishes(dishes);
 
@@ -79,13 +79,13 @@ public class SplashScreen extends Activity {
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.fruit);
         drinks.add(new Drink(1,"Jugo de Frutas",15000f,false, SqliteHelper.getBitmapAsByteArray(bitmap)));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.beer);
-        drinks.add(new Drink(1,"Cerveza",45000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        drinks.add(new Drink(2,"Cerveza",45000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.wine);
-        drinks.add(new Drink(1,"Vino",25000f,false, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        drinks.add(new Drink(3,"Vino",25000f,false, SqliteHelper.getBitmapAsByteArray(bitmap)));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.orangejuice);
-        drinks.add(new Drink(1,"Jugo de Naranja",15000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        drinks.add(new Drink(4,"Jugo de Naranja",15000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
         bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.soda);
-        drinks.add(new Drink(1,"Soda",10000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
+        drinks.add(new Drink(5,"Soda",10000f,true, SqliteHelper.getBitmapAsByteArray(bitmap)));
 
         sqliteHelper.initializationDrinks(drinks);
 

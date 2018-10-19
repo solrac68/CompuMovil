@@ -3,6 +3,8 @@ package co.edu.udea.compumovil.gr06_20182.lab3.fragment;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -20,12 +22,18 @@ import android.view.ViewGroup;
 import android.widget.Filterable;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab3.R;
 import co.edu.udea.compumovil.gr06_20182.lab3.adapter.AdapterRecyclerDrinkView;
 import co.edu.udea.compumovil.gr06_20182.lab3.adapter.OnMyAdapterClickListener;
 import co.edu.udea.compumovil.gr06_20182.lab3.model.Drink;
+import co.edu.udea.compumovil.gr06_20182.lab3.model.DrinkDto;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.ControllerDrinks;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.Mapper;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.MyDownloadService;
+import co.edu.udea.compumovil.gr06_20182.lab3.tools.OnMyResponse;
 import co.edu.udea.compumovil.gr06_20182.lab3.tools.SqliteHelper;
 
 /**
@@ -162,8 +170,26 @@ public class Drinks extends Fragment {
         mRecyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
             @Override
             public boolean onFling(int i, int i1) {
-                Log.d("onFling", "onFling: " + Integer.toString(i) + Integer.toString(i1));
                 Toast.makeText(getContext(), "Se inicia descarga de bebidas .. ",Toast.LENGTH_SHORT).show();
+
+                try{
+                    new ControllerDrinks(new OnMyResponse<DrinkDto>() {
+                        @Override
+                        public void onResponse(List<DrinkDto> obj) {
+                            if(obj.size() > 0){
+                                new BackgroundTaskDrink().execute(obj);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(String msgError) {
+                            Log.d("Drinks", " Falla descarga imagenes bebidas: " + msgError);
+                        }
+                    }).start();
+
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
                 return false;
             }
         });
@@ -193,6 +219,43 @@ public class Drinks extends Fragment {
     public interface OnFragmentListenerDrink {
         // TODO: Update argument type and name
         void onFragmentDrinkInteraction(Integer id, Boolean isNew);
+    }
+
+    private class BackgroundTaskDrink extends AsyncTask<List<DrinkDto>, Void, List<Drink>> {
+
+        SqliteHelper sqliteHelper;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //Log.d(TAG, "Iniciando descarga de imagenes de bebidas");
+        }
+
+        @Override
+        protected List<Drink> doInBackground(List<DrinkDto>... drinksDto) {
+            byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fruit));
+
+            sqliteHelper = new SqliteHelper(getContext());
+            List<Drink>  drinks = Mapper.MapDrinks(drinksDto[0]);
+            for(Drink d:drinks){
+                if(d.getImage() == null){
+                    d.setImage(bitmap);
+                }
+            }
+            sqliteHelper.initializationDrinks(drinks);
+
+            return drinks;
+
+        }
+
+        @Override
+        protected void onPostExecute(List<Drink>  result) {
+            super.onPostExecute(result);
+            drinks = result;
+            adapter.updateAdapter(result);
+            Log.d("Drinks", "Images Bebidas Descargadas Con Exito: "+ result.size());
+            Toast.makeText(getContext(), result.size() + " imagenes de bébidas descargadas con éxito",Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
