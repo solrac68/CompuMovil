@@ -42,7 +42,7 @@ public class SplashScreen extends Activity {
             public void run() {
                 //InitializationDishes();
                 //InitializationDrinks();
-                InitializationUser();
+                //InitializationUser();
                 Intent i = new Intent(SplashScreen.this, LoginActivity.class);
                 startActivity(i);
 
