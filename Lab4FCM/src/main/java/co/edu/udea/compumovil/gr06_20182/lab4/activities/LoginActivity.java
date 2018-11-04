@@ -12,11 +12,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthCredential;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.User;
@@ -25,13 +39,16 @@ import co.edu.udea.compumovil.gr06_20182.lab4.tools.Helper;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.SessionManager;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "LoginActivity";
+    private static final int SIGN_IN_GOOGLE_CODE = 101 ;
 
     // Controls in this form
     EditText email,password;
     Button btnLogin;
     TextView registerScreen;
+    SignInButton btnSigInGoogle;
+
 
     static SqliteHelper sqliteHelper;
 
@@ -40,6 +57,8 @@ public class LoginActivity extends AppCompatActivity {
 
     FirebaseAuth firebasAuth;
     FirebaseAuth.AuthStateListener authStateListener;
+    GoogleApiClient googleApiClient;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         btnLogin = findViewById(R.id.btnLogin);
         registerScreen = findViewById(R.id.link_to_register);
+        btnSigInGoogle = findViewById(R.id.btnSigInGoogle);
         sqliteHelper = new SqliteHelper(this);
         session = new SessionManager(getApplicationContext());
 
@@ -77,6 +97,18 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         };
+
+        //Inicialización de google account
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this,this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
+                .build();
+
     }
 
     private void initEvents(){
@@ -106,7 +138,18 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnSigInGoogle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+
+                startActivityForResult(intent,SIGN_IN_GOOGLE_CODE);
+            }
+        });
     }
+
+
 
     private void signIn(final String email, final String password){
         firebasAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(this,new OnCompleteListener<AuthResult>() {
@@ -114,10 +157,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Toast.makeText(LoginActivity.this,"El logeo de la cuenta fue exitosa",Toast.LENGTH_SHORT).show();
-                    //String time = Helper.getMetaData(getApplicationContext(), "key_time");
-                    //Toast.makeText(getApplicationContext(), time,Toast.LENGTH_SHORT).show();
-                    session.createLoginSession(email,password);
-//
+
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(i);
                     finish();
@@ -159,4 +199,46 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-}
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SIGN_IN_GOOGLE_CODE) {
+            GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            signInGoogleFirebas(googleSignInResult);
+        }
+    }
+
+    private void signInGoogleFirebas(GoogleSignInResult googleSignInResult){
+        if(googleSignInResult.isSuccess()){
+            AuthCredential authCredential =
+                    GoogleAuthProvider.getCredential(googleSignInResult.getSignInAccount().getIdToken(),null);
+
+            firebasAuth.signInWithCredential(authCredential).addOnCompleteListener(this,new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()){
+                        Toast.makeText(LoginActivity.this,"El logeo de la cuenta fue exitosa",Toast.LENGTH_SHORT).show();
+
+                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(i);
+                        finish();
+                    }
+                    else
+                    {
+                        Toast.makeText(LoginActivity.this,getString(R.string.nok_user_authenticate),Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        }else{
+            Toast.makeText(LoginActivity.this,"La utenticación con google no fue exitosa",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    }
+

@@ -31,8 +31,8 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
-        startService(intentMemoryService);
+        //Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
+        //startService(intentMemoryService);
 
 
 

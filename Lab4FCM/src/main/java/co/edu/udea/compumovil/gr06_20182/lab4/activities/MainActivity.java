@@ -3,6 +3,7 @@ package co.edu.udea.compumovil.gr06_20182.lab4.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
+
 import java.util.HashMap;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
@@ -44,8 +55,10 @@ public class MainActivity extends AppCompatActivity implements
         Dishfrag.OnFragmentListenerDish,
         DishAddEdit.OnFragmentListenerDishAddEdit,
         Drinks.OnFragmentListenerDrink,
-        DrinkAddEdit.OnFragmentListenerDrinkAddEdit{
+        DrinkAddEdit.OnFragmentListenerDrinkAddEdit,
+        GoogleApiClient.OnConnectionFailedListener{
 
+    private static final String TAG = "MainActivity";
     private DrawerLayout dl;
     private ActionBarDrawerToggle t;
     private NavigationView nv;
@@ -56,7 +69,9 @@ public class MainActivity extends AppCompatActivity implements
     private String userName;
     private String userEmail;
     private String userPassword;
-    private byte[] image;
+    private String guidUser;
+    private String urlImage;
+    //private byte[] image;
     public static SqliteHelper sqliteHelper;
     private SearchView searchView;
     private String fragment_current;
@@ -77,6 +92,11 @@ public class MainActivity extends AppCompatActivity implements
     Drinks drinks;
     Menu menu;
 
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private GoogleApiClient googleApiClient;
+
+
 
 
 
@@ -84,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         dl = (DrawerLayout)findViewById(R.id.activity_main);
         t = new ActionBarDrawerToggle(this, dl,R.string.openDrawer, R.string.closeDrawer);
@@ -97,8 +119,9 @@ public class MainActivity extends AppCompatActivity implements
         txtViewHeaderEmail = navHeader.findViewById(R.id.textViewHeaderEmail);
         sqliteHelper = new SqliteHelper(this);
 
-        getSession();
+        initialize();
 
+        //getSession();
 
 
         if (savedInstanceState == null) {
@@ -120,18 +143,15 @@ public class MainActivity extends AppCompatActivity implements
                         CURRENT_POSITION = 1;
                         break;
                     case R.id.profile:
-                        changeFragment(Profile.newInstance(image,userName,userEmail),FRAGMENTPROFILE);
+                        changeFragment(Profile.newInstance(urlImage,guidUser,userEmail),FRAGMENTPROFILE);
                         CURRENT_POSITION = 2;
                         break;
                     case R.id.settings:
-                        changeFragment(Settings.newInstance(userName,userEmail,userPassword),FRAGMENTSETTINGS);
+                        changeFragment(Settings.newInstance(guidUser,userEmail,userPassword),FRAGMENTSETTINGS);
                         CURRENT_POSITION = 3;
                         break;
                     case R.id.close_session:
-                        //Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
-                        //stopService(intentMemoryService);
-                        finish();
-                        session.logoutUser();
+                        signOut();
                         break;
                     case R.id.about:
                         changeFragment(new About(),FRAGMENTABOUT);
@@ -147,11 +167,44 @@ public class MainActivity extends AppCompatActivity implements
         });
 
 
-        // Iniciar servicio
-        //Intent intentMemoryService = new Intent(getApplicationContext(), MyDownloadService.class);
-        //startService(intentMemoryService);
+    }
+
+    private void initialize(){
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                if (firebaseUser !=  null){
+                    //Picasso.with(WelcomeActivity.this).load(firebaseUser.getPhotoUrl()).into(imvPhoto);
+
+                    //txtViewHeaderEmail.setText(" Email: " + firebaseUser.getEmail());
+                    userEmail = firebaseUser.getEmail();
+                    urlImage = firebaseUser.getPhotoUrl()!= null ? firebaseUser.getPhotoUrl().toString():null;
+                    guidUser = firebaseUser.getUid();
+
+                    txtViewHeaderEmail.setText(userEmail);
+                    txtViewHeader.setText(guidUser);
 
 
+
+                }else {
+                    Log.w(TAG, "onAuthStateChanged - signed_out");
+                }
+            }
+        };
+
+        //Inicialización de Google Account
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
     }
 
 
@@ -194,17 +247,18 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    private void getSession() {
-        session = new SessionManager(getApplicationContext());
-        HashMap<String, String> user = session.getUserDetails();
-        userName = user.get(SessionManager.KEY_NAME);
-        userEmail = user.get(SessionManager.KEY_EMAIL);
-        userPassword = user.get(SessionManager.KEY_PASSWORD);
-        image = sqliteHelper.getUserByEmail(userEmail).getImage();
-
-        txtViewHeader.setText(userName);
-        txtViewHeaderEmail.setText(userEmail);
-    }
+//    private void getSession() {
+//        session = new SessionManager(getApplicationContext());
+//
+//        HashMap<String, String> user = session.getUserDetails();
+//        userName = user.get(SessionManager.KEY_NAME);
+//        userEmail = user.get(SessionManager.KEY_EMAIL);
+//        userPassword = user.get(SessionManager.KEY_PASSWORD);
+//        image = sqliteHelper.getUserByEmail(userEmail).getImage();
+//
+//        txtViewHeader.setText(userName);
+//        txtViewHeaderEmail.setText(userEmail);
+//    }
 
 
     @Override
@@ -263,6 +317,42 @@ public class MainActivity extends AppCompatActivity implements
         changeFragment(Drinks.newInstance(isNew),FRAGMENTDDRINK);
     }
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        firebaseAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        firebaseAuth.removeAuthStateListener(authStateListener);
+    }
+
+    private void signOut(){
+        firebaseAuth.signOut();
+        if (Auth.GoogleSignInApi != null){
+              Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
+                  @Override
+                  public void onResult(@NonNull Status status) {
+                      if (status.isSuccess()){
+                          Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                          startActivity(i);
+                          finish();
+                      }else {
+                          Toast.makeText(MainActivity.this, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
+                      }
+                  }
+              });
+
+        }
+
+    }
 
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {

@@ -1,7 +1,6 @@
 package co.edu.udea.compumovil.gr06_20182.lab4.fragment;
 
-import android.content.Context;
-import android.graphics.Bitmap;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,10 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.SessionManager;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
+import com.squareup.picasso.Picasso;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,7 +33,7 @@ public class Profile extends Fragment {
     private SessionManager session;
 
     // TODO: Rename and change types of parameters
-    private byte[] image;
+    private String image;
     private String name;
     private String email;
     ImageView imageView;
@@ -58,10 +56,10 @@ public class Profile extends Fragment {
      * @return A new instance of fragment Profile.
      */
     // TODO: Rename and change types and number of parameters
-    public static Profile newInstance(byte[] image, String name, String email) {
+    public static Profile newInstance(String image, String name, String email) {
         Profile fragment = new Profile();
         Bundle args = new Bundle();
-        args.putByteArray(ARG_IMAGE, image);
+        args.putString(ARG_IMAGE, image);
         args.putString(ARG_NAME, name);
         args.putString(ARG_EMAIL, email);
         fragment.setArguments(args);
@@ -72,7 +70,8 @@ public class Profile extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            image = getArguments().getByteArray(ARG_IMAGE);
+            //image = Uri.parse(getArguments().getString(ARG_IMAGE));
+            image = getArguments().getString(ARG_IMAGE);
             name = getArguments().getString(ARG_NAME);
             email = getArguments().getString(ARG_EMAIL);
         }
@@ -96,7 +95,15 @@ public class Profile extends Fragment {
         textViewUsuario = view.findViewById(R.id.txtViewName2);
         textViewEmail = view.findViewById(R.id.txtViewEmail2);
 
-        imageView.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(image));
+        if(image != null){
+            Picasso.get()
+                    .load(image)
+                    .resize(250, 250)
+                    .centerCrop()
+                    .into(imageView);
+        }
+
+
         textViewUsuario.setText(name);
         textViewEmail.setText(email);
     }
