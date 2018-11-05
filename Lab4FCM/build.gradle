@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "co.edu.udea.compumovil.gr06_20182.lab4"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -52,9 +52,24 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:2.4.0"
     implementation "com.squareup.retrofit2:converter-gson:2.4.0"
 
-    implementation 'com.google.firebase:firebase-core:16.0.4'
-    implementation 'com.google.firebase:firebase-auth:16.0.4'
-    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    //implementation 'com.google.firebase:firebase-core:16.0.4'
+
+    //implementation 'com.google.firebase:firebase-auth:16.0.4'
+    //implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    //implementation 'com.google.firebase:firebase-firestore:15.0.0'
+    implementation 'com.google.firebase:firebase-storage:16.0.2'
+    implementation 'com.firebaseui:firebase-ui-storage:4.1.0'
+
+
+    // Firestore
+    implementation 'com.google.firebase:firebase-firestore:17.1.0'
+
+    // Other Firebase/Play services deps
+    implementation 'com.google.firebase:firebase-auth:16.0.3'
+    implementation 'com.google.android.gms:play-services-auth:16.0.0'
+
+    // FirebaseUI (for authentication)
+    implementation 'com.firebaseui:firebase-ui-auth:4.2.0'
 }
 apply plugin: 'com.google.gms.google-services'

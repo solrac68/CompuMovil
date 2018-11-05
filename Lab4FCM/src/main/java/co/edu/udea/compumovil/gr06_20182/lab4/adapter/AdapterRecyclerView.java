@@ -59,7 +59,10 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
         holder.dishName.setText(dishesFilter.get(pos).getName());
         holder.dishPrice.setText(dishesFilter.get(pos).getStrPrice());
         holder.dishPreparationTime.setText(dishesFilter.get(pos).getStrTime_preparation());
-        holder.dishPhoto.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dishesFilter.get(pos).getImage()));
+
+        // TODO: cambiar
+        //holder.dishPhoto.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dishesFilter.get(pos).getImage()));
+
         if(dishesFilter.get(pos).isFavorite()){
             holder.dishFavorite.setVisibility(pos);
         }
@@ -69,7 +72,9 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return dishesFilter.size();
+        // TODO:  REVISAR DESPUES.
+        //return dishesFilter.size();
+        return 0;
     }
 
 

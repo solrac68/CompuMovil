@@ -96,9 +96,13 @@ public class DishAddEdit extends Fragment {
     }
 
     private void viewDataOnScreenToUpdate(){
-        dish = sqliteHelper.getDishById(id);
+        // TODO: cambiar
+        //dish = sqliteHelper.getDishById(id);
         //Toast.makeText(getContext(), dish.getName(), Toast.LENGTH_SHORT).show();
-        imgDish.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dish.getImage()));
+
+        // TODO: convierte imagen
+        //imgDish.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dish.getImage()));
+
         txtNameDish.setText(dish.getName());
         txtTimePreparation.setText(dish.getTime_preparation().toString());
         txtPrice.setText(dish.getPrice().toString());
@@ -133,19 +137,21 @@ public class DishAddEdit extends Fragment {
 
                 if(isNew){
                     dish = new Dish();
-                    dish.setId(sqliteHelper.getNextIdDish());
+                    // TODO: cambiar
+                    //dish.setId(sqliteHelper.getNextIdDish());
                     dish.setType("H");
                 }
 
                 dish.setName(txtNameDish.getText().toString().trim());
                 dish.setFavorite(checkFavorite.isChecked());
 
-                try{
-                    dish.setImage(ImageHelper.imageViewToByte(imgDish));
-                }catch(Exception e)
-                {
-                    dish.setImage(SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.octopus)));
-                }
+                // TODO: cambiar
+//                try{
+//                    dish.setImage(ImageHelper.imageViewToByte(imgDish));
+//                }catch(Exception e)
+//                {
+//                    dish.setImage(SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.octopus)));
+//                }
 
                 //byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fish));
 
@@ -155,11 +161,13 @@ public class DishAddEdit extends Fragment {
                 try {
                     if(isNew){
                         Log.d(TAG, " Antes: " + dish.getId());
-                        sqliteHelper.insertData(dish);
+                        // TODO: cambiar
+                        //sqliteHelper.insertData(dish);
                         Log.d(TAG, " Id: " + dish.getId());
                     }
                     else{
-                        sqliteHelper.updateDish(dish);
+                        // TODO: cambiar
+                        //sqliteHelper.updateDish(dish);
                     }
                     Toast.makeText(getContext(), isNew?getString(R.string.ok_insert):getString(R.string.ok_update), Toast.LENGTH_SHORT).show();
                     onButtonPressed(isNew);

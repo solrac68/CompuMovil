@@ -125,13 +125,17 @@ public class MyDownloadService extends Service {
             byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fish));
             sqliteHelper = new SqliteHelper(getApplicationContext());
             List<Dish>  dishes = Mapper.MapDishes(dishesDto[0]);
-            for(Dish d:dishes){
-                if(d.getImage() == null){
-                    d.setImage(bitmap);
-                }
-            }
 
-            sqliteHelper.initializationDishes(dishes);
+            // TODO: cambiar
+//            for(Dish d:dishes){
+//                if(d.getImage() == null){
+//                    d.setImage(bitmap);
+//                }
+//            }
+
+            // TODO: cambiar
+            //sqliteHelper.initializationDishes(dishes);
+
             return dishes;
 
         }
@@ -158,11 +162,13 @@ public class MyDownloadService extends Service {
             sqliteHelper = new SqliteHelper(getApplicationContext());
             List<Drink>  drinks = Mapper.MapDrinks(drinksDto[0]);
             for(Drink d:drinks){
-                if(d.getImage() == null){
-                    d.setImage(bitmap);
-                }
+                // TODO: cambiar
+//                if(d.getImage() == null){
+//                    d.setImage(bitmap);
+//                }
             }
-            sqliteHelper.initializationDrinks(drinks);
+            // TODO: cambiar
+            //sqliteHelper.initializationDrinks(drinks);
 
             return drinks;
 

@@ -119,6 +119,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Toast.makeText(RegisterActivity.this,"La creación de la cuenta fue exitosa",Toast.LENGTH_SHORT).show();
+                    finish();
                 }
                 else
                 {

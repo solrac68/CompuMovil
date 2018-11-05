@@ -141,7 +141,9 @@ public class Drinks extends Fragment {
         // Inflate the layout for this fragment
         View vw = inflater.inflate(R.layout.fragment_drinks, container, false);
         sqlh = new SqliteHelper(getContext());
-        drinks = sqlh.getDrinks();
+
+        // TODO: cambiar
+        //drinks = sqlh.getDrinks();
 
         mRecyclerView = vw.findViewById(R.id.rv_content_drink);
 
@@ -237,12 +239,14 @@ public class Drinks extends Fragment {
 
             sqliteHelper = new SqliteHelper(getContext());
             List<Drink>  drinks = Mapper.MapDrinks(drinksDto[0]);
-            for(Drink d:drinks){
-                if(d.getImage() == null){
-                    d.setImage(bitmap);
-                }
-            }
-            sqliteHelper.initializationDrinks(drinks);
+
+            // TODO: cambiar
+//            for(Drink d:drinks){
+//                if(d.getImage() == null){
+//                    d.setImage(bitmap);
+//                }
+//            }
+//            sqliteHelper.initializationDrinks(drinks);
 
             return drinks;
 

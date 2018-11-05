@@ -141,7 +141,8 @@ public class Dishfrag extends Fragment {
         View vw = inflater.inflate(R.layout.fragment_dishes, container, false);
 
         sqlh = new SqliteHelper(getContext());
-        this.dishes = sqlh.getDishes();
+        // TODO: consulta platos
+        //this.dishes = sqlh.getDishes();
 
         mRecyclerView = vw.findViewById(R.id.rv_content);
 
@@ -249,13 +250,14 @@ public class Dishfrag extends Fragment {
             byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fish));
             sqliteHelper = new SqliteHelper(getContext());
             List<Dish>  dishes = Mapper.MapDishes(dishesDto[0]);
-            for(Dish d:dishes){
-                if(d.getImage() == null){
-                    d.setImage(bitmap);
-                }
-            }
-
-            sqliteHelper.initializationDishes(dishes);
+            // TODO: cambiar
+//            for(Dish d:dishes){
+//                if(d.getImage() == null){
+//                    d.setImage(bitmap);
+//                }
+//            }
+            // TODO: cambiar
+            // sqliteHelper.initializationDishes(dishes);
             return dishes;
 
         }

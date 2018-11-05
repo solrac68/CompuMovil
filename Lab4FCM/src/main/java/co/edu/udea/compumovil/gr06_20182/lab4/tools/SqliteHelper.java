@@ -1,6 +1,6 @@
 package co.edu.udea.compumovil.gr06_20182.lab4.tools;
 
-import android.content.ContentValues;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,17 +9,14 @@ import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
-import android.widget.Toast;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+
 
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Drink;
@@ -53,50 +50,10 @@ public class SqliteHelper extends SQLiteOpenHelper {
         statement.clearBindings();
     }
 
-    public void insertData(Dish dish){
-        SQLiteDatabase database = getWritableDatabase();
 
-        String sql = "INSERT INTO " + Dish.TABLE_NAME + " VALUES (?,?,?,?,?,?,?)";
-        SQLiteStatement statement = database.compileStatement(sql);
-        statement.clearBindings();
-        statement.bindLong(1,dish.getId());
-        statement.bindString(2,dish.getName());
-        statement.bindDouble(3,dish.getPrice());
-        statement.bindLong(4,dish.getTime_preparation());
-        statement.bindLong(5,dish.isFavorite()?1:0);
-        if(dish.getImage() != null) statement.bindBlob(6,dish.getImage());
-        statement.bindString(7,dish.getType());
-        statement.executeInsert();
-        statement.clearBindings();
-    }
 
-    public void insertData(Drink drink){
-        SQLiteDatabase database = getWritableDatabase();
 
-        String sql = "INSERT INTO " + Drink.TABLE_NAME + " VALUES (?,?,?,?,?)";
-        SQLiteStatement statement = database.compileStatement(sql);
-        statement.clearBindings();
-        statement.bindLong(1,drink.getId());
-        statement.bindString(2,drink.getName());
-        statement.bindDouble(3,drink.getPrice());
-        statement.bindLong(4,drink.isFavorite()?1:0);
-        if(drink.getImage() != null) statement.bindBlob(5,drink.getImage());
-        statement.executeInsert();
-        statement.clearBindings();
-    }
 
-//    public boolean insertDataSecure(User user){
-//        SQLiteDatabase database = getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//
-//        contentValues.put(User.COLUMN_NAME,user.getName());
-//        contentValues.put(User.COLUMN_PASSWORD,user.getPassword());
-//        contentValues.put(User.COLUMN_EMAIL,user.getEmail());
-//        contentValues.put(User.COLUMN_IMAGE,user.getImage());
-//        long ins = database.insert(User.TABLE_NAME,null,contentValues);
-//
-//        return !(ins == -1);
-//    }
 
     public Cursor getData(String sql){
         SQLiteDatabase database = getReadableDatabase();
@@ -126,125 +83,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
 
     }
 
-    public Dish getDishById(Integer id){
-        Dish dish = null;
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.query(Dish.TABLE_NAME,
-                new String[]{Dish.COLUMN_ID,Dish.COLUMN_NAME,Dish.COLUMN_PRICE,Dish.COLUMN_TIME_PREPARATION,Dish.COLUMN_FAVORITE,Dish.COLUMN_IMAGE,Dish.COLUMN_TYPE},
-                Dish.COLUMN_ID + "=?",
-                new String[]{id.toString()},null,null,null,null);
 
-        if(cursor != null){
-            cursor.moveToFirst();
-            dish = new Dish(
-                    cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_ID)),
-                    cursor.getString(cursor.getColumnIndex(Dish.COLUMN_NAME)),
-                    cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_PRICE)),
-                    cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_TIME_PREPARATION)),
-                    cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_FAVORITE))==1,
-                    cursor.getBlob(cursor.getColumnIndex(Dish.COLUMN_IMAGE)),
-                    cursor.getString(cursor.getColumnIndex(Dish.COLUMN_TYPE))
-            );
-        }
-
-        return dish;
-    }
-
-    public Drink getDrinkById(Integer id){
-        Drink drink = null;
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.query(Drink.TABLE_NAME,
-                new String[]{Drink.COLUMN_ID,Drink.COLUMN_NAME,Drink.COLUMN_PRICE,Drink.COLUMN_FAVORITE,Drink.COLUMN_IMAGE},
-                Drink.COLUMN_ID + "=?",
-                new String[]{id.toString()},null,null,null,null);
-
-        if(cursor != null){
-            cursor.moveToFirst();
-            drink = new Drink(
-                    cursor.getInt(cursor.getColumnIndex(Drink.COLUMN_ID)),
-                    cursor.getString(cursor.getColumnIndex(Drink.COLUMN_NAME)),
-                    cursor.getFloat(cursor.getColumnIndex(Drink.COLUMN_PRICE)),
-                    cursor.getInt(cursor.getColumnIndex(Drink.COLUMN_FAVORITE))==1,
-                    cursor.getBlob(cursor.getColumnIndex(Drink.COLUMN_IMAGE))
-            );
-        }
-
-        return drink;
-    }
-
-    public List<Dish> getDishes(){
-        List<Dish> dishes = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + Dish.TABLE_NAME + " ORDER BY " + Dish.COLUMN_ID + " DESC";
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if(cursor.moveToFirst()){
-            do{
-                Dish dish = new Dish(
-                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_ID)),
-                        cursor.getString(cursor.getColumnIndex(Dish.COLUMN_NAME)),
-                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_PRICE)),
-                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_TIME_PREPARATION)),
-                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_FAVORITE))==1,
-                        cursor.getBlob(cursor.getColumnIndex(Dish.COLUMN_IMAGE)),
-                        cursor.getString(cursor.getColumnIndex(Dish.COLUMN_TYPE))
-                );
-                dishes.add(dish);
-            } while(cursor.moveToNext());
-        }
-
-        return dishes;
-    }
-
-    public List<Drink> getDrinks(){
-        List<Drink> drinks = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + Drink.TABLE_NAME + " ORDER BY " + Drink.COLUMN_ID + " DESC";
-
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if(cursor.moveToFirst()){
-            do{
-                Drink dish = new Drink(
-                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_ID)),
-                        cursor.getString(cursor.getColumnIndex(Dish.COLUMN_NAME)),
-                        cursor.getFloat(cursor.getColumnIndex(Dish.COLUMN_PRICE)),
-                        cursor.getInt(cursor.getColumnIndex(Dish.COLUMN_FAVORITE))==1,
-                        cursor.getBlob(cursor.getColumnIndex(Dish.COLUMN_IMAGE))
-                );
-                drinks.add(dish);
-            } while(cursor.moveToNext());
-        }
-
-        return drinks;
-    }
-
-    public int updateDish(Dish dish){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(Dish.COLUMN_FAVORITE, String.valueOf(dish.isFavorite()?1:0));
-        values.put(Dish.COLUMN_NAME, dish.getName());
-        values.put(Dish.COLUMN_IMAGE, dish.getImage());
-        values.put(Dish.COLUMN_TIME_PREPARATION, dish.getTime_preparation().toString());
-        values.put(Dish.COLUMN_PRICE, dish.getPrice().toString());
-        values.put(Dish.COLUMN_TYPE, dish.getType());
-
-        return db.update(Dish.TABLE_NAME, values, Dish.COLUMN_ID + " = ?",
-                new String[]{String.valueOf(dish.getId())});
-    }
-
-    public int updateDrink(Drink dish){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(Drink.COLUMN_FAVORITE, String.valueOf(dish.isFavorite()?1:0));
-        values.put(Drink.COLUMN_NAME, dish.getName());
-        values.put(Drink.COLUMN_IMAGE, dish.getImage());
-        values.put(Drink.COLUMN_PRICE, dish.getPrice().toString());
-
-        return db.update(Drink.TABLE_NAME, values, Drink.COLUMN_ID + " = ?",
-                new String[]{String.valueOf(dish.getId())});
-    }
 
     public static byte[] getBitmapAsByteArray(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -252,19 +91,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         return outputStream.toByteArray();
     }
 
-    // Checking if email exists
-    public Boolean chkemail(String email){
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(User.SQL_CHECK_EMAIL,new String[]{email});
-        return cursor.getCount() > 0;
-    }
 
-    // Checking if email exists
-    public Boolean chkemailpassword(String email,String password){
-        SQLiteDatabase database = getReadableDatabase();
-        Cursor cursor = database.rawQuery(User.SQL_CHECK_EMAIL_PASSWORD,new String[]{email,password});
-        return cursor.getCount() > 0;
-    }
 
     public static Bitmap getByteArrayAsBitmap(byte[] imgByte) {
         return BitmapFactory.decodeByteArray(imgByte, 0, imgByte.length);
@@ -289,60 +116,12 @@ public class SqliteHelper extends SQLiteOpenHelper {
 
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
-        db.execSQL(User.CREATE_TABLE);
-        db.execSQL(Dish.CREATE_TABLE);
-        db.execSQL(Drink.CREATE_TABLE);
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + User.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + Dish.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + Drink.TABLE_NAME);
-    }
-
-    public void deleteTable(String name){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("delete from " + name);
-    }
-
-    public void initializationDishes(List<Dish> dishes){
-        this.deleteTable(Dish.TABLE_NAME);
-        for(Dish d : dishes){
-            this.insertData(d);
-        }
-    }
-
-    public void initializationDrinks(List<Drink> drinks){
-        this.deleteTable(Drink.TABLE_NAME);
-        for(Drink d : drinks){
-            this.insertData(d);
-        }
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
     }
-
-
-    public Integer getNextIdDrink(){
-        List<Drink> drinks = this.getDrinks();
-        Integer idMax = 0;
-        for(Drink drink:drinks){
-            if(idMax < drink.getId()){
-                idMax = drink.getId();
-            }
-        }
-        return idMax+1;
-    }
-
-    public Integer getNextIdDish(){
-        List<Dish> dishes = this.getDishes();
-        Integer idMax = 0;
-        for(Dish dish:dishes){
-            if(idMax < dish.getId()){
-                idMax = dish.getId();
-            }
-        }
-        return idMax+1;
-    }
-
 }

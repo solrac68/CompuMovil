@@ -90,9 +90,13 @@ public class DrinkAddEdit extends Fragment {
     }
 
     private void viewDataOnScreenToUpdate(){
-        drink = sqliteHelper.getDrinkById(id);
+        // TODO: cambiar
+        //drink = sqliteHelper.getDrinkById(id);
         //Toast.makeText(getContext(), dish.getName(), Toast.LENGTH_SHORT).show();
-        imgDrink.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(drink.getImage()));
+
+        // TODO: cambiar
+        //imgDrink.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(drink.getImage()));
+
         txtNameDrink.setText(drink.getName());
         txtPrice.setText(drink.getPrice().toString());
         checkFavorite.setChecked(drink.isFavorite());
@@ -124,32 +128,36 @@ public class DrinkAddEdit extends Fragment {
             public void onClick(View view) {
 
 
-                if(isNew){
-                    drink = new Drink();
-                    //Log.d(TAG, " Antes: " + drink.getId());
-                    drink.setId(sqliteHelper.getNextIdDrink());
-                    //Log.d(TAG, " Id: " + drink.getId());
-                }
+                // TODO: cambiar
+//                if(isNew){
+//                    drink = new Drink();
+//                    //Log.d(TAG, " Antes: " + drink.getId());
+//                    drink.setId(sqliteHelper.getNextIdDrink());
+//                    //Log.d(TAG, " Id: " + drink.getId());
+//                }
 
                 drink.setName(txtNameDrink.getText().toString().trim());
                 drink.setFavorite(checkFavorite.isChecked());
 
-                try{
-                    drink.setImage(ImageHelper.imageViewToByte(imgDrink));
-                }catch (Exception e){
-                    drink.setImage(SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fruit)));
-                }
+                // TODO: cambiar
+//                try{
+//                    drink.setImage(ImageHelper.imageViewToByte(imgDrink));
+//                }catch (Exception e){
+//                    drink.setImage(SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fruit)));
+//                }
 
 
                 drink.setPrice(Float.parseFloat(txtPrice.getText().toString().trim()));
 
                 try {
                     if(isNew){
-                        sqliteHelper.insertData(drink);
+                        // TODO: cambiar
+                        //sqliteHelper.insertData(drink);
                         Toast.makeText(getContext(), "Hola Insert", Toast.LENGTH_SHORT).show();
                     }
                     else{
-                        sqliteHelper.updateDrink(drink);
+                        // TODO: cambiar
+                        //sqliteHelper.updateDrink(drink);
                     }
                     Toast.makeText(getContext(), isNew?getString(R.string.ok_insert):getString(R.string.ok_update), Toast.LENGTH_SHORT).show();
                     onButtonPressed(isNew);

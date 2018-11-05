@@ -1,33 +1,18 @@
 package co.edu.udea.compumovil.gr06_20182.lab4.model;
 
 public class Drink {
-    public static final String TABLE_NAME = "drinks";
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_PRICE = "price";
-    public static final String COLUMN_IMAGE = "image";
-    public static final String COLUMN_FAVORITE = "favorite";
 
     private int id;
     private String name;
     private Float price;
-    private byte[] image;
+    private String image;
     private boolean favorite;
-
-    public static final String CREATE_TABLE =
-            "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "("
-                    + COLUMN_ID + " INTEGER PRIMARY KEY,"
-                    + COLUMN_NAME + " TEXT,"
-                    + COLUMN_PRICE + " REAL,"
-                    + COLUMN_FAVORITE + " INTEGER,"
-                    + COLUMN_IMAGE + " BLOB"
-                    + ")";
 
     public Drink(){
 
     }
 
-    public Drink(int id, String name, Float price, boolean favorite, byte[] image) {
+    public Drink(int id, String name, Float price, boolean favorite, String image) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -63,11 +48,11 @@ public class Drink {
         this.price = price;
     }
 
-    public byte[] getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(String image) {
         this.image = image;
     }
 

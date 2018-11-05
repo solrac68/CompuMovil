@@ -57,7 +57,8 @@ public class AdapterRecyclerDrinkView extends RecyclerView.Adapter<AdapterRecycl
         // - replace the contents of the view with that element
         holder.dishName.setText(drinksFilter.get(pos).getName());
         holder.dishPrice.setText(drinksFilter.get(pos).getStrPrice());
-        holder.dishPhoto.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(drinksFilter.get(pos).getImage()));
+        // TODO: cambiar
+        //holder.dishPhoto.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(drinksFilter.get(pos).getImage()));
         if(drinksFilter.get(pos).isFavorite()){
             holder.dishFavorite.setVisibility(pos);
         }
@@ -67,7 +68,9 @@ public class AdapterRecyclerDrinkView extends RecyclerView.Adapter<AdapterRecycl
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return drinksFilter.size();
+        // TODO: modificar
+        return 0;
+        //return drinksFilter.size();
     }
 
 
