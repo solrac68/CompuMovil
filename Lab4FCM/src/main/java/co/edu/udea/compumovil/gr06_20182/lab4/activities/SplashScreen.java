@@ -71,11 +71,12 @@ public class SplashScreen extends Activity {
     private void initDishes(){
         CollectionReference platos = mFirestore.collection("dishes");
 
+
         dishes = new ArrayList<>();
-        dishes.add(new Dish(1,"Carne con Tomate",35000,25,false, "https://firebasestorage.googleapis.com/v0/b/laboratorio4-7304d.appspot.com/o/dishes%2Fcarne-tomate.jpg?alt=media&token=a1bd4895-0fea-409f-bb05-ecbbd9185dc5","E"));
-        dishes.add(new Dish(2,"Chuleta de Cerdo",30000,35,true, "https://firebasestorage.googleapis.com/v0/b/laboratorio4-7304d.appspot.com/o/dishes%2Fchuleta-de-cerdo-con-pure.jpg?alt=media&token=e6f5f789-6e7b-4da2-8486-c430e147e285","E"));
-        dishes.add(new Dish(3,"Mejillones al vapor",55000,45,false, "https://firebasestorage.googleapis.com/v0/b/laboratorio4-7304d.appspot.com/o/dishes%2Fmejillones-al-vapor.jpg?alt=media&token=f56c902b-5332-41f4-b69d-342fe6264788","E"));
-        dishes.add(new Dish(4,"Roast Beef",35000,25,true, "https://firebasestorage.googleapis.com/v0/b/laboratorio4-7304d.appspot.com/o/dishes%2Froastbeef-patatas.jpg?alt=media&token=534d1cc6-d08d-4a09-95ec-cd914240e008","E"));
+        dishes.add(new Dish(1,"Carne con Tomate",35000,25,false, "carne-tomate.jpg","E"));
+        dishes.add(new Dish(2,"Chuleta de Cerdo",30000,35,true, "chuleta-de-cerdo-con-pure.jpg","E"));
+        dishes.add(new Dish(3,"Mejillones al vapor",55000,45,false, "mejillones-al-vapor.jpg","E"));
+        dishes.add(new Dish(4,"Roast Beef",35000,25,true, "roastbeef-patatas.jpg","E"));
 
         for(Dish d:dishes){
             platos.add(d)
@@ -96,8 +97,8 @@ public class SplashScreen extends Activity {
 
     private void initDrinks(){
         drinks = new ArrayList<>();
-        drinks.add(new Drink(1,"Jugo de Frutas",15000f,false, "https://firebasestorage.googleapis.com/v0/b/laboratorio4-7304d.appspot.com/o/drinks%2FJugos.jpg?alt=media&token=3b9476ba-f127-4af7-8429-d8f40dde592c"));
-        drinks.add(new Drink(2,"Vino Chileno",45000f,true, "https://firebasestorage.googleapis.com/v0/b/laboratorio4-7304d.appspot.com/o/drinks%2FVino.jpg?alt=media&token=d5c0671a-ae79-4fe8-b45e-2df690a45ec1"));
+        drinks.add(new Drink(1,"Jugo de Frutas",15000f,false, "Jugos.jpg"));
+        drinks.add(new Drink(2,"Vino Chileno",45000f,true, "Vino.jpg"));
 
         CollectionReference bebidas = mFirestore.collection(getString(R.string.DRINKS));
 

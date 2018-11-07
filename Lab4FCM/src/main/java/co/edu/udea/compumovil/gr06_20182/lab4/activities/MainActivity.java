@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //Evento que viene de Dishfrag, con este evento se lanza la creción de la ventana de edición o inserción de registros
     @Override
-    public void onFragmentInteraction(Integer id,Boolean isNew) {
+    public void onFragmentInteraction(String id,Boolean isNew) {
         changeFragment(DishAddEdit.newInstance(id,isNew),FRAGMENTDISHADDEDIT);
     }
 
@@ -371,6 +371,8 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         }
     }
+
+
 
 
 }

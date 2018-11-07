@@ -1,5 +1,9 @@
 package co.edu.udea.compumovil.gr06_20182.lab4.adapter;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,6 +16,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,25 +35,28 @@ import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 
-public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerView.DishViewHolder> implements Filterable{
+public class AdapterRecyclerView extends FirestoreAdapter<AdapterRecyclerView.DishViewHolder>{
 
-    List<Dish> dishes;
-    List<Dish> dishesFilter;
-    OnMyAdapterClickListener onMyAdapterClickListener;
+    public interface OnRestaurantSelectedListener {
+
+        void onRestaurantSelected(DocumentSnapshot restaurant);
+
+    }
+
+    OnRestaurantSelectedListener mListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public AdapterRecyclerView(List<Dish> dishes, OnMyAdapterClickListener onMyAdapterClickListener) {
-        this.dishes = dishes;
-        this.dishesFilter = dishes;
-        this.onMyAdapterClickListener = onMyAdapterClickListener;
+    public AdapterRecyclerView(Query query, OnRestaurantSelectedListener mListener) {
+        super(query);
+        this.mListener = mListener;
     }
 
     public void updateAdapter(List<Dish> dishes){
-        this.dishes.clear();
-        this.dishes = dishes;
-        this.dishesFilter = dishes;
-        //this.notifyData
-        this.notifyDataSetChanged();
+//        this.dishes.clear();
+//        this.dishes = dishes;
+//        this.dishesFilter = dishes;
+//        //this.notifyData
+//        this.notifyDataSetChanged();
     }
 
     // Create new views (invoked by the layout manager)
@@ -53,93 +71,92 @@ public class AdapterRecyclerView extends RecyclerView.Adapter<AdapterRecyclerVie
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(DishViewHolder holder, int pos) {
-
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        holder.dishName.setText(dishesFilter.get(pos).getName());
-        holder.dishPrice.setText(dishesFilter.get(pos).getStrPrice());
-        holder.dishPreparationTime.setText(dishesFilter.get(pos).getStrTime_preparation());
-
-        // TODO: cambiar
-        //holder.dishPhoto.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(dishesFilter.get(pos).getImage()));
-
-        if(dishesFilter.get(pos).isFavorite()){
-            holder.dishFavorite.setVisibility(pos);
-        }
-
-    }
-
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        // TODO:  REVISAR DESPUES.
-        //return dishesFilter.size();
-        return 0;
+        holder.bind(getSnapshot(pos), mListener);
     }
 
 
     //Clase necesaria para la implementación del RecyclerView
-    public class DishViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class DishViewHolder extends RecyclerView.ViewHolder{
         public CardView cardView;
         public TextView dishName;
         public TextView dishPrice;
         public TextView dishPreparationTime;
         public ImageView dishPhoto;
         public ImageView dishFavorite;
+        //FirebaseStorage storage;
+        StorageReference gsReference;
 
         DishViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
             cardView = (CardView) itemView.findViewById(R.id.card_view_dish);
             dishName = (TextView) itemView.findViewById(R.id.name_dish);
             dishPrice = (TextView) itemView.findViewById(R.id.dish_price);
             dishPhoto = (ImageView) itemView.findViewById(R.id.dish_photo);
             dishPreparationTime = (TextView) itemView.findViewById(R.id.dish_preparation);
             dishFavorite = (ImageView) itemView.findViewById(R.id.dish_favorite);
+
+            //storage = FirebaseStorage.getInstance();
+            //gsReference = FirebaseStorage.getInstance().getReference().child("dishes");
         }
 
-        @Override
-        public void onClick(View view) {
-            int pos = getAdapterPosition();
-            //Log.d("AdapterRecyclerView", "onClick: " + pos + "  Name: "+ dishName.getText() );
+        public void bind(final DocumentSnapshot snapshot,final OnRestaurantSelectedListener listener) {
 
-            onMyAdapterClickListener.onItemClick(pos);
-        }
+            final Dish  restaurant = snapshot.toObject(Dish.class);
+            Resources resources = itemView.getResources();
 
-    }
+            gsReference = FirebaseStorage.getInstance().getReference().child("dishes").child(restaurant.getImage());
 
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-                String charString = charSequence.toString();
-                if (charString.isEmpty()) {
-                    dishesFilter = dishes;
-                } else {
-                    List<Dish> filteredList = new ArrayList<>();
-                    for (Dish row : dishes) {
+            //dishes/carne-tomate.jpg
 
-                        // name match condition. this might differ depending on your requirement
-                        // here we are looking for name or phone number match
-                        if (row.getName().toLowerCase().contains(charString.toLowerCase()) || row.getStrPrice().contains(charSequence)) {
-                            filteredList.add(row);
+            final File file;
+            try {
+                file = File.createTempFile(restaurant.getImage(), "jpg");
+                        gsReference.getFile(file)
+                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                Glide.with(dishPhoto.getContext())
+                                        .load(file.getAbsolutePath())
+                                        .into(dishPhoto);
+                                dishName.setText(restaurant.getName());
+                                dishPrice.setText(restaurant.getStrPrice());
+                                dishPreparationTime.setText(restaurant.getStrTime_preparation());
+
+                                if(restaurant.isFavorite()){
+                                    dishFavorite.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e("Adapter", "Ocurrio un error al mostrar la imagen");
+                            e.printStackTrace();
                         }
+                });
+            }catch (Exception e){
+                Log.e("Adapter", "Ocurrió un error en la descarga de imágenes");
+                e.printStackTrace();
+            }
+
+            //Log.d("Imagen bing",gsReference.);
+
+            // Load image
+//            Glide.with(dishPhoto.getContext())
+//                    .load(gsReference)
+//                    .into(dishPhoto);
+
+
+
+            // Click listener
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (listener != null) {
+                        listener.onRestaurantSelected(snapshot);
                     }
-
-                    dishesFilter = filteredList;
                 }
-
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = dishesFilter;
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                dishesFilter = (ArrayList<Dish>) filterResults.values;
-                notifyDataSetChanged();
-            }
-        };
+            });
+        }
     }
+
 }

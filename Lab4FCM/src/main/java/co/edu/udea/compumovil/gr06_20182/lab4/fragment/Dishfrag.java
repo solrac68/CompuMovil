@@ -3,13 +3,10 @@ package co.edu.udea.compumovil.gr06_20182.lab4.fragment;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -18,11 +15,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filterable;
-import android.widget.Toast;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 
 import java.util.List;
 
@@ -30,10 +30,6 @@ import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.adapter.AdapterRecyclerView;
 import co.edu.udea.compumovil.gr06_20182.lab4.adapter.OnMyAdapterClickListener;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
-import co.edu.udea.compumovil.gr06_20182.lab4.model.DishDto;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.ControllerDishes;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.Mapper;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.OnMyResponse;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 /**
@@ -54,13 +50,15 @@ public class Dishfrag extends Fragment {
 
     private SearchView searchView;
 
+    private FirebaseFirestore mFirestore;
+    private Query mQuery;
+
 
     public Dishfrag() {
         // Required empty public constructor
     }
 
     void Initialization(){
-
     }
 
     public static Dishfrag newInstance(Boolean isNew) {
@@ -72,7 +70,7 @@ public class Dishfrag extends Fragment {
     }
 
 
-    public void onButtonPressed(Integer id,Boolean isNew) {
+    public void onButtonPressed(String id,Boolean isNew) {
         if (mListener != null) {
             mListener.onFragmentInteraction(id,isNew);
         }
@@ -117,7 +115,6 @@ public class Dishfrag extends Fragment {
                 return false;
             }
         });
-
     }
 
     @Override
@@ -132,6 +129,47 @@ public class Dishfrag extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    private void initFirestore() {
+        mFirestore = FirebaseFirestore.getInstance();
+
+        mQuery = mFirestore.collection("dishes")
+                .orderBy("name", Query.Direction.DESCENDING);
+
+    }
+
+    private void initRecyclerView(){
+        if (mQuery == null) {
+            Log.w("DisfFrag", "No query, not initializing RecyclerView");
+        }
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        adapter = new AdapterRecyclerView(mQuery, new AdapterRecyclerView.OnRestaurantSelectedListener() {
+            @Override
+            public void onRestaurantSelected(DocumentSnapshot restaurant) {
+                Log.d("DISHFRAG", "Id: " + restaurant.getId());
+                onButtonPressed(restaurant.getId(),false);
+            }
+        }){
+
+            @Override
+            protected void onDataChanged() {
+                // Show/hide content if the query returns empty.
+            }
+
+            @Override
+            protected void onError(FirebaseFirestoreException e) {
+                // Show a snackbar on errors
+//                Snackbar.make(findViewById(android.R.id.content),
+//                        "Error: check logs for info.", Snackbar.LENGTH_LONG).show();
+            }
+
+        };
+
+        mRecyclerView.setAdapter(adapter);
+    }
+
 
 
     @Override
@@ -141,67 +179,18 @@ public class Dishfrag extends Fragment {
         View vw = inflater.inflate(R.layout.fragment_dishes, container, false);
 
         sqlh = new SqliteHelper(getContext());
-        // TODO: consulta platos
-        //this.dishes = sqlh.getDishes();
 
         mRecyclerView = vw.findViewById(R.id.rv_content);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(linearLayoutManager);
+        initFirestore();
 
-        adapter = new AdapterRecyclerView(dishes, new OnMyAdapterClickListener() {
-            @Override
-            public void onItemClick(Integer position) {
-                //Toast.makeText(getContext(), "Hello: "+ dishes.get(position).getId().toString(), Toast.LENGTH_SHORT).show();
-                //dishes = sqlh.getDishes();
-                Log.d("DISHFRAG", "Id: " + dishes.get(position).getId());
-                onButtonPressed(dishes.get(position).getId(),false);
-            }
-        });
-        mRecyclerView.setAdapter(adapter);
-
-        //mRecyclerView.removeViewAt(1);
-        //adapter.notifyItemChanged();
+        initRecyclerView();
 
         fab = vw.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Toast.makeText(getContext(), "Hola", Toast.LENGTH_SHORT).show();
-                // Para crear un nuevo registro de platos..
-                onButtonPressed(-1,true);
-            }
-        });
-
-        mRecyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
-            @Override
-            public boolean onFling(int i, int i1) {
-                Log.d("onFling", "onFling: " + Integer.toString(i) + Integer.toString(i1));
-                Toast.makeText(getContext(), "Se inicia descarga de platos .. ",Toast.LENGTH_SHORT).show();
-
-                ///----
-                try {
-                    new ControllerDishes(new OnMyResponse<DishDto>() {
-                        @Override
-                        public void onResponse(List<DishDto> obj) {
-
-                            if(obj.size() > 0){
-                                new BackgroundTaskDish().execute(obj);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(String msgError) {
-                            Log.d("DishFrag", " Falla descarga imagenes platos: " + msgError);
-                        }
-                    }).start();
-
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                ///----
-                return false;
+                onButtonPressed("-1",true);
             }
         });
 
@@ -232,45 +221,23 @@ public class Dishfrag extends Fragment {
 
     public interface OnFragmentListenerDish {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Integer id, Boolean isNew);
+        void onFragmentInteraction(String id, Boolean isNew);
     }
 
-    private class BackgroundTaskDish extends AsyncTask<List<DishDto>, Void, List<Dish>> {
-
-        SqliteHelper sqliteHelper;
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //Log.d(TAG, "Iniciando descarga de imagenes de platos");
-        }
-
-        @Override
-        protected List<Dish> doInBackground(List<DishDto>... dishesDto) {
-            //int count = urls.length;
-            byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fish));
-            sqliteHelper = new SqliteHelper(getContext());
-            List<Dish>  dishes = Mapper.MapDishes(dishesDto[0]);
-            // TODO: cambiar
-//            for(Dish d:dishes){
-//                if(d.getImage() == null){
-//                    d.setImage(bitmap);
-//                }
-//            }
-            // TODO: cambiar
-            // sqliteHelper.initializationDishes(dishes);
-            return dishes;
-
-        }
-
-        @Override
-        protected void onPostExecute(List<Dish>  result) {
-            super.onPostExecute(result);
-            dishes = result;
-            adapter.updateAdapter(result);
-            Log.d("DishFrag", "Images Platos descargadas Con Exito: "+ result.size());
-            Toast.makeText(getContext(), result.size() + " imagenes de platos descargadas con éxito",Toast.LENGTH_SHORT).show();
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (adapter != null) {
+            adapter.stopListening();
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
 
+        if (adapter != null) {
+            adapter.startListening();
+        }
+    }
 }
