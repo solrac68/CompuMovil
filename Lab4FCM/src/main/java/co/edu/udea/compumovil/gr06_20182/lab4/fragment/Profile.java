@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.SessionManager;
+
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -96,9 +98,12 @@ public class Profile extends Fragment {
         textViewEmail = view.findViewById(R.id.txtViewEmail2);
 
         if(image != null){
+//            Glide.with(imageView.getContext())
+//                    .load(image)
+//                    .into(imageView);
             Picasso.get()
                     .load(image)
-                    .resize(250, 250)
+                    .fit()
                     .centerCrop()
                     .into(imageView);
         }
