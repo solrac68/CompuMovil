@@ -10,9 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +19,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -45,11 +42,8 @@ import java.io.InputStream;
 import java.util.UUID;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
-import co.edu.udea.compumovil.gr06_20182.lab4.activities.RegisterActivity;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.ImageHelper;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.Mapper;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,7 +66,6 @@ public class DishAddEdit extends Fragment {
     private ImageView imgDish;
     private Button btnOk;
     private Dish dish;
-    public static SqliteHelper sqliteHelper;
     final int REQUEST_CODE_GALLERY = 999;
     final int REQUEST_CODE_PHONE = 998;
     final String TAG = "DishAddEdit";
@@ -110,7 +103,6 @@ public class DishAddEdit extends Fragment {
             id = getArguments().getString(ARG_ID);
             isNew = getArguments().getBoolean(ARG_NEW);
         }
-        sqliteHelper = new SqliteHelper(getContext());
     }
 
     private void init(View view){

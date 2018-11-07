@@ -1,15 +1,11 @@
 package co.edu.udea.compumovil.gr06_20182.lab4.activities;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,9 +29,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.squareup.picasso.Picasso;
-
-import java.util.HashMap;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.fragment.About;
@@ -46,9 +38,7 @@ import co.edu.udea.compumovil.gr06_20182.lab4.fragment.DrinkAddEdit;
 import co.edu.udea.compumovil.gr06_20182.lab4.fragment.Drinks;
 import co.edu.udea.compumovil.gr06_20182.lab4.fragment.Profile;
 import co.edu.udea.compumovil.gr06_20182.lab4.fragment.Settings;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.MyDownloadService;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.SessionManager;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 public class MainActivity extends AppCompatActivity implements
         Settings.OnFragmentInteractionListener,
@@ -72,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements
     private String guidUser;
     private String urlImage;
     //private byte[] image;
-    public static SqliteHelper sqliteHelper;
     private SearchView searchView;
     private String fragment_current;
 
@@ -117,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements
         navHeader = nv.getHeaderView(0);
         txtViewHeader =  navHeader.findViewById(R.id.textViewHeader);
         txtViewHeaderEmail = navHeader.findViewById(R.id.textViewHeaderEmail);
-        sqliteHelper = new SqliteHelper(this);
 
         initialize();
 
@@ -305,9 +293,9 @@ public class MainActivity extends AppCompatActivity implements
         changeFragment(Dishfrag.newInstance(isNew),FRAGMENTDISH);
     }
 
-    //Evento que viene de Dink, con este evento se lanza la ventana de visualizacion de edición o inserción de registro.
+    //Evento que viene de Drink, con este evento se lanza la ventana de visualizacion de edición o inserción de registro.
     @Override
-    public void onFragmentDrinkInteraction(Integer id, Boolean isNew) {
+    public void onFragmentDrinkInteraction(String id, Boolean isNew) {
         changeFragment(DrinkAddEdit.newInstance(id,isNew),FRAGMENTDRINKADDEDIT);
     }
 
@@ -354,23 +342,6 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-
-    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private static final String DEBUG_TAG = "Gestures";
-
-        @Override
-        public boolean onDown(MotionEvent event) {
-            Log.d(DEBUG_TAG,"onDown: " + event.toString());
-            return true;
-        }
-
-        @Override
-        public boolean onFling(MotionEvent event1, MotionEvent event2,
-                               float velocityX, float velocityY) {
-            Log.d(DEBUG_TAG, "onFling: " + event1.toString() + event2.toString());
-            return true;
-        }
-    }
 
 
 

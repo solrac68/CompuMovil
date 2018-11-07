@@ -22,26 +22,26 @@ import android.view.ViewGroup;
 import android.widget.Filterable;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+
 import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.adapter.AdapterRecyclerDrinkView;
+import co.edu.udea.compumovil.gr06_20182.lab4.adapter.AdapterRecyclerView;
 import co.edu.udea.compumovil.gr06_20182.lab4.adapter.OnMyAdapterClickListener;
+import co.edu.udea.compumovil.gr06_20182.lab4.adapter.OnRestaurantSelectedListener;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Drink;
-import co.edu.udea.compumovil.gr06_20182.lab4.model.DrinkDto;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.ControllerDrinks;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.Mapper;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.MyDownloadService;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.OnMyResponse;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class Drinks extends Fragment {
     List<Drink> drinks;
-    SqliteHelper sqlh;
     private RecyclerView mRecyclerView;
     private AdapterRecyclerDrinkView adapter;
     private FloatingActionButton fab;
@@ -53,6 +53,9 @@ public class Drinks extends Fragment {
     private OnFragmentListenerDrink mListener;
 
     private SearchView searchView;
+
+    private FirebaseFirestore mFirestore;
+    private Query mQuery;
 
 
     public Drinks() {
@@ -73,7 +76,7 @@ public class Drinks extends Fragment {
     }
 
 
-    public void onButtonPressed(Integer id,Boolean isNew) {
+    public void onButtonPressed(String id,Boolean isNew) {
         if (mListener != null) {
             mListener.onFragmentDrinkInteraction(id,isNew);
         }
@@ -133,6 +136,45 @@ public class Drinks extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    private void initFirestore() {
+        mFirestore = FirebaseFirestore.getInstance();
+
+        mQuery = mFirestore.collection("drinks")
+                .orderBy("name", Query.Direction.DESCENDING);
+
+        Log.w("Drinks", "Query, drink " + mQuery);
+
+    }
+
+    private void initRecyclerView(){
+        if (mQuery == null) {
+            Log.w("Drinks", "No query, not initializing RecyclerView");
+        }
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+        adapter = new AdapterRecyclerDrinkView(mQuery, new OnRestaurantSelectedListener() {
+            @Override
+            public void onRestaurantSelected(DocumentSnapshot drink) {
+                Log.d("DISHFRAG", "Id: " + drink.getId());
+                onButtonPressed(drink.getId(),false);
+            }
+        }){
+
+            @Override
+            protected void onDataChanged() {
+            }
+
+            @Override
+            protected void onError(FirebaseFirestoreException e) {
+            }
+
+        };
+
+        mRecyclerView.setAdapter(adapter);
+    }
+
 
 
     @Override
@@ -140,61 +182,26 @@ public class Drinks extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View vw = inflater.inflate(R.layout.fragment_drinks, container, false);
-        sqlh = new SqliteHelper(getContext());
 
         // TODO: cambiar
         //drinks = sqlh.getDrinks();
 
         mRecyclerView = vw.findViewById(R.id.rv_content_drink);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(linearLayoutManager);
+        initFirestore();
 
-        adapter = new AdapterRecyclerDrinkView(drinks, new OnMyAdapterClickListener() {
-            @Override
-            public void onItemClick(Integer position) {
+        initRecyclerView();
 
-                onButtonPressed(drinks.get(position).getId(),false);
-            }
-        });
-        mRecyclerView.setAdapter(adapter);
 
         fab = vw.findViewById(R.id.fab_drink);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Toast.makeText(getContext(), "Hola", Toast.LENGTH_SHORT).show();
-                // Para crear un nuevo registro de platos..
-                onButtonPressed(-1,true);
+                onButtonPressed("-1",true);
             }
         });
 
-        mRecyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
-            @Override
-            public boolean onFling(int i, int i1) {
-                Toast.makeText(getContext(), "Se inicia descarga de bebidas .. ",Toast.LENGTH_SHORT).show();
-
-                try{
-                    new ControllerDrinks(new OnMyResponse<DrinkDto>() {
-                        @Override
-                        public void onResponse(List<DrinkDto> obj) {
-                            if(obj.size() > 0){
-                                new BackgroundTaskDrink().execute(obj);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(String msgError) {
-                            Log.d("Drinks", " Falla descarga imagenes bebidas: " + msgError);
-                        }
-                    }).start();
-
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-                return false;
-            }
-        });
 
         return vw;
 
@@ -220,46 +227,25 @@ public class Drinks extends Fragment {
 
     public interface OnFragmentListenerDrink {
         // TODO: Update argument type and name
-        void onFragmentDrinkInteraction(Integer id, Boolean isNew);
+        void onFragmentDrinkInteraction(String id, Boolean isNew);
     }
 
-    private class BackgroundTaskDrink extends AsyncTask<List<DrinkDto>, Void, List<Drink>> {
-
-        SqliteHelper sqliteHelper;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //Log.d(TAG, "Iniciando descarga de imagenes de bebidas");
-        }
-
-        @Override
-        protected List<Drink> doInBackground(List<DrinkDto>... drinksDto) {
-            byte[] bitmap = SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fruit));
-
-            sqliteHelper = new SqliteHelper(getContext());
-            List<Drink>  drinks = Mapper.MapDrinks(drinksDto[0]);
-
-            // TODO: cambiar
-//            for(Drink d:drinks){
-//                if(d.getImage() == null){
-//                    d.setImage(bitmap);
-//                }
-//            }
-//            sqliteHelper.initializationDrinks(drinks);
-
-            return drinks;
-
-        }
-
-        @Override
-        protected void onPostExecute(List<Drink>  result) {
-            super.onPostExecute(result);
-            drinks = result;
-            adapter.updateAdapter(result);
-            Log.d("Drinks", "Images Bebidas Descargadas Con Exito: "+ result.size());
-            Toast.makeText(getContext(), result.size() + " imagenes de bébidas descargadas con éxito",Toast.LENGTH_SHORT).show();
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (adapter != null) {
+            adapter.stopListening();
         }
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (adapter != null) {
+            adapter.startListening();
+        }
+    }
+
 
 }

@@ -1,8 +1,6 @@
 package co.edu.udea.compumovil.gr06_20182.lab4.adapter;
 
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -10,14 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.storage.images.FirebaseImageLoader;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,21 +21,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 
 public class AdapterRecyclerView extends FirestoreAdapter<AdapterRecyclerView.DishViewHolder>{
-
-    public interface OnRestaurantSelectedListener {
-
-        void onRestaurantSelected(DocumentSnapshot restaurant);
-
-    }
 
     OnRestaurantSelectedListener mListener;
 
@@ -51,13 +37,6 @@ public class AdapterRecyclerView extends FirestoreAdapter<AdapterRecyclerView.Di
         this.mListener = mListener;
     }
 
-    public void updateAdapter(List<Dish> dishes){
-//        this.dishes.clear();
-//        this.dishes = dishes;
-//        this.dishesFilter = dishes;
-//        //this.notifyData
-//        this.notifyDataSetChanged();
-    }
 
     // Create new views (invoked by the layout manager)
     @Override
@@ -118,13 +97,7 @@ public class AdapterRecyclerView extends FirestoreAdapter<AdapterRecyclerView.Di
                                 Glide.with(dishPhoto.getContext())
                                         .load(file.getAbsolutePath())
                                         .into(dishPhoto);
-                                dishName.setText(restaurant.getName());
-                                dishPrice.setText(restaurant.getStrPrice());
-                                dishPreparationTime.setText(restaurant.getStrTime_preparation());
 
-                                if(restaurant.isFavorite()){
-                                    dishFavorite.setVisibility(View.VISIBLE);
-                                }
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -138,14 +111,13 @@ public class AdapterRecyclerView extends FirestoreAdapter<AdapterRecyclerView.Di
                 e.printStackTrace();
             }
 
-            //Log.d("Imagen bing",gsReference.);
+            dishName.setText(restaurant.getName());
+            dishPrice.setText(restaurant.getStrPrice());
+            dishPreparationTime.setText(restaurant.getStrTime_preparation());
 
-            // Load image
-//            Glide.with(dishPhoto.getContext())
-//                    .load(gsReference)
-//                    .into(dishPhoto);
-
-
+            if(restaurant.isFavorite()){
+                dishFavorite.setVisibility(View.VISIBLE);
+            }
 
             // Click listener
             itemView.setOnClickListener(new View.OnClickListener() {

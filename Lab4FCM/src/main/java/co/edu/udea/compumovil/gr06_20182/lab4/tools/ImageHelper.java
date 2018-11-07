@@ -10,8 +10,8 @@ public class ImageHelper {
     public static byte[] imageViewToByte(ImageView image){
         Bitmap bitmap;
 
-        image.setDrawingCacheEnabled(true);
-        image.buildDrawingCache();
+        //image.setDrawingCacheEnabled(true);
+        //image.buildDrawingCache();
 
         bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
 

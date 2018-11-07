@@ -3,7 +3,6 @@ package co.edu.udea.compumovil.gr06_20182.lab4.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -15,7 +14,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -26,8 +24,6 @@ import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Drink;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.User;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.MyDownloadService;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 public class SplashScreen extends Activity {
 
@@ -36,7 +32,6 @@ public class SplashScreen extends Activity {
     List<Drink> drinks;
     User user;
     Bitmap bitmap;
-    SqliteHelper sqliteHelper;
     private FirebaseFirestore mFirestore;
     private String tag = "Cloud FireStore get SplashScreen";
 

@@ -28,16 +28,14 @@ import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.adapter.AdapterRecyclerView;
-import co.edu.udea.compumovil.gr06_20182.lab4.adapter.OnMyAdapterClickListener;
+import co.edu.udea.compumovil.gr06_20182.lab4.adapter.OnRestaurantSelectedListener;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class Dishfrag extends Fragment {
     List<Dish> dishes;
-    SqliteHelper sqlh;
     private RecyclerView mRecyclerView;
     private AdapterRecyclerView adapter;
     private FloatingActionButton fab;
@@ -145,7 +143,7 @@ public class Dishfrag extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        adapter = new AdapterRecyclerView(mQuery, new AdapterRecyclerView.OnRestaurantSelectedListener() {
+        adapter = new AdapterRecyclerView(mQuery, new OnRestaurantSelectedListener() {
             @Override
             public void onRestaurantSelected(DocumentSnapshot restaurant) {
                 Log.d("DISHFRAG", "Id: " + restaurant.getId());
@@ -178,7 +176,6 @@ public class Dishfrag extends Fragment {
         // Inflate the layout for this fragment
         View vw = inflater.inflate(R.layout.fragment_dishes, container, false);
 
-        sqlh = new SqliteHelper(getContext());
 
         mRecyclerView = vw.findViewById(R.id.rv_content);
 

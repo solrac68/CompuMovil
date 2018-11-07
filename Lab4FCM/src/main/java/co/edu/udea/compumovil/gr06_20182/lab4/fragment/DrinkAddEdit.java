@@ -21,14 +21,30 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Drink;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.ImageHelper;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,16 +59,18 @@ public class DrinkAddEdit extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ID = "id";
     private static final String ARG_NEW = "estado";
-    private Integer id;
+    private String id;
     private Boolean isNew;
     private EditText txtNameDrink,txtPrice;
     private CheckBox checkFavorite;
     private ImageView imgDrink;
     private Button btnOk;
     private Drink drink;
-    public static SqliteHelper sqliteHelper;
     final int REQUEST_CODE_GALLERY = 999;
     final String TAG = "DrinkAddEdit";
+    private FirebaseFirestore mFirestore;
+    private StorageReference storageReference;
+    private String currentImage;
 
 
     private OnFragmentListenerDrinkAddEdit mListener;
@@ -61,11 +79,16 @@ public class DrinkAddEdit extends Fragment {
         // Required empty public constructor
     }
 
+    private void initFirestone(){
+        mFirestore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference().child("drinks");
+    }
 
-    public static DrinkAddEdit newInstance(Integer id, Boolean isNew) {
+
+    public static DrinkAddEdit newInstance(String id, Boolean isNew) {
         DrinkAddEdit fragment = new DrinkAddEdit();
         Bundle args = new Bundle();
-        args.putInt(ARG_ID, id);
+        args.putString(ARG_ID, id);
         args.putBoolean(ARG_NEW, isNew);
         fragment.setArguments(args);
         return fragment;
@@ -75,10 +98,9 @@ public class DrinkAddEdit extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            id = getArguments().getInt(ARG_ID);
+            id = getArguments().getString(ARG_ID);
             isNew = getArguments().getBoolean(ARG_NEW);
         }
-        sqliteHelper = new SqliteHelper(getContext());
     }
 
     private void init(View view){
@@ -89,17 +111,103 @@ public class DrinkAddEdit extends Fragment {
         btnOk = view.findViewById(R.id.btnOkDrink);
     }
 
-    private void viewDataOnScreenToUpdate(){
-        // TODO: cambiar
-        //drink = sqliteHelper.getDrinkById(id);
-        //Toast.makeText(getContext(), dish.getName(), Toast.LENGTH_SHORT).show();
+    private void getData(){
+        drink.setName(txtNameDrink.getText().toString().trim());
+        drink.setFavorite(checkFavorite.isChecked());
+        drink.setPrice(Float.parseFloat(txtPrice.getText().toString().trim()));
+        drink.setImage(currentImage);
+    }
 
-        // TODO: cambiar
-        //imgDrink.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(drink.getImage()));
+    private void setData(){
+        final File file;
 
         txtNameDrink.setText(drink.getName());
         txtPrice.setText(drink.getPrice().toString());
         checkFavorite.setChecked(drink.isFavorite());
+
+
+        try {
+            file = File.createTempFile(drink.getImage(), "jpg");
+            storageReference.child(drink.getImage()).getFile(file)
+                    .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            Glide.with(imgDrink.getContext())
+                                    .load(file.getAbsolutePath())
+                                    .into(imgDrink);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e("DishAddEdit", "Ocurrio un error al mostrar la imagen");
+                    e.printStackTrace();
+                }
+            });
+        }catch (Exception e){
+            Log.e("DrinkAddEdit", "Ocurrió un error en la descarga de imágenes");
+            e.printStackTrace();
+        }
+    }
+
+    private void addDrink(){
+        CollectionReference platos = mFirestore.collection("drinks");
+        platos.add(drink)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "Drink add with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error agregando una bebda", e);
+                    }
+                });
+    }
+
+    private void updateDrink(){
+        CollectionReference platos = mFirestore.collection("drinks");
+        platos.document(id)
+                .set(drink)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Drink update with ID: " );
+                        Toast.makeText(getContext(), getString(R.string.ok_insert), Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing Drink", e);
+                        Toast.makeText(getContext(), getString(R.string.ok_update), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+
+
+    private void viewDataOnScreenToUpdate(){
+        CollectionReference db = mFirestore.collection("drinks");
+        DocumentReference docRef = db.document(id);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        drink = document.toObject(Drink.class);
+                        setData();
+
+                    } else {
+                        Log.d(TAG, "No existe la bebida");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
     }
 
     @Override
@@ -107,9 +215,10 @@ public class DrinkAddEdit extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_drink_add_edit, container, false);
-
+        initFirestone();
         init(view);
 
+        Log.d(TAG,"Id: " + id);
         // If data exists, this is to show on Screen.
         if(!isNew){
             viewDataOnScreenToUpdate();
@@ -123,51 +232,62 @@ public class DrinkAddEdit extends Fragment {
         });
 
         btnOk.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
-
-
-                // TODO: cambiar
-//                if(isNew){
-//                    drink = new Drink();
-//                    //Log.d(TAG, " Antes: " + drink.getId());
-//                    drink.setId(sqliteHelper.getNextIdDrink());
-//                    //Log.d(TAG, " Id: " + drink.getId());
-//                }
-
-                drink.setName(txtNameDrink.getText().toString().trim());
-                drink.setFavorite(checkFavorite.isChecked());
-
-                // TODO: cambiar
-//                try{
-//                    drink.setImage(ImageHelper.imageViewToByte(imgDrink));
-//                }catch (Exception e){
-//                    drink.setImage(SqliteHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.fruit)));
-//                }
-
-
-                drink.setPrice(Float.parseFloat(txtPrice.getText().toString().trim()));
-
-                try {
-                    if(isNew){
-                        // TODO: cambiar
-                        //sqliteHelper.insertData(drink);
-                        Toast.makeText(getContext(), "Hola Insert", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        // TODO: cambiar
-                        //sqliteHelper.updateDrink(drink);
-                    }
-                    Toast.makeText(getContext(), isNew?getString(R.string.ok_insert):getString(R.string.ok_update), Toast.LENGTH_SHORT).show();
-                    onButtonPressed(isNew);
-                }catch (Exception ex){
-                    Log.d(TAG, " Error: " + ex.getMessage());
-                    ex.printStackTrace();
+                byte[] img = null;
+                if(isNew){
+                    drink = new Drink();
+                    // TODO: cambiar
                 }
+
+                try{
+                    img = ImageHelper.imageViewToByte(imgDrink);
+                }catch (Exception e){
+                    img = ImageHelper.getBitmapAsByteArray(BitmapFactory.decodeResource(getResources(),R.drawable.coffee));
+                }
+
+                currentImage = UUID.randomUUID().toString() + ".png";
+                storageReference = storageReference.child(currentImage);
+
+                UploadTask uploadTask = storageReference.putBytes(img);
+
+                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                    @Override
+                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                        if (!task.isSuccessful()) {
+                            throw task.getException();
+                        }
+                        return storageReference.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if (task.isSuccessful()) {
+                            Uri downloadUri = task.getResult();
+
+                            String url = downloadUri.getLastPathSegment();
+
+                            Log.w(TAG, "image URL: " + url);
+
+                            getData();
+
+                            if(isNew){
+                                addDrink();
+                            }else{
+                                updateDrink();
+                            }
+
+                            onButtonPressed(isNew);
+
+
+                        } else {
+                            Log.e(TAG, "Ocurrió un error en la subida");
+                        }
+                    }
+                });
+
             }
         });
-
 
         return view;
     }

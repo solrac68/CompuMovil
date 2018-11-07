@@ -1,7 +1,10 @@
 package co.edu.udea.compumovil.gr06_20182.lab4.adapter;
 
+import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,35 +13,34 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Drink;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 
-public class AdapterRecyclerDrinkView extends RecyclerView.Adapter<AdapterRecyclerDrinkView.DishViewHolder> implements Filterable{
+public class AdapterRecyclerDrinkView extends FirestoreAdapter<AdapterRecyclerDrinkView.DishViewHolder>{
 
-    List<Drink> drinks;
-    List<Drink> drinksFilter;
-    OnMyAdapterClickListener onMyAdapterClickListener;
+    OnRestaurantSelectedListener mListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public AdapterRecyclerDrinkView(List<Drink> drinks, OnMyAdapterClickListener onMyAdapterClickListener) {
-        this.drinks = drinks;
-        this.drinksFilter = drinks;
-        this.onMyAdapterClickListener = onMyAdapterClickListener;
+    public AdapterRecyclerDrinkView(Query query, OnRestaurantSelectedListener mListener) {
+        super(query);
+        this.mListener = mListener;
     }
 
-    public void updateAdapter(List<Drink> drinks){
-        this.drinks.clear();
-        this.drinks = drinks;
-        this.drinksFilter = drinks;
-        //this.notifyData
-        this.notifyDataSetChanged();
-    }
 
     // Create new views (invoked by the layout manager)
     @Override
@@ -53,38 +55,25 @@ public class AdapterRecyclerDrinkView extends RecyclerView.Adapter<AdapterRecycl
     @Override
     public void onBindViewHolder(DishViewHolder holder, int pos) {
 
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        holder.dishName.setText(drinksFilter.get(pos).getName());
-        holder.dishPrice.setText(drinksFilter.get(pos).getStrPrice());
-        // TODO: cambiar
-        //holder.dishPhoto.setImageBitmap(SqliteHelper.getByteArrayAsBitmap(drinksFilter.get(pos).getImage()));
-        if(drinksFilter.get(pos).isFavorite()){
-            holder.dishFavorite.setVisibility(pos);
-        }
+        holder.bind(getSnapshot(pos), mListener);
+        Log.d("AdapterRecyclerDrink", "Inicio onBindViewHolder");
 
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        // TODO: modificar
-        return 0;
-        //return drinksFilter.size();
-    }
 
 
     //Clase necesaria para la implementación del RecyclerView
-    public class DishViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class DishViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView;
         public TextView dishName;
         public TextView dishPrice;
         public ImageView dishPhoto;
         public ImageView dishFavorite;
 
+        StorageReference gsReference;
+
         DishViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
             cardView = (CardView) itemView.findViewById(R.id.card_view_dish);
             dishName = (TextView) itemView.findViewById(R.id.name_dish);
             dishPrice = (TextView) itemView.findViewById(R.id.dish_price);
@@ -92,47 +81,57 @@ public class AdapterRecyclerDrinkView extends RecyclerView.Adapter<AdapterRecycl
             dishFavorite = (ImageView) itemView.findViewById(R.id.dish_favorite);
         }
 
-        @Override
-        public void onClick(View view) {
-            int pos = getAdapterPosition();
+        public void bind(final DocumentSnapshot snapshot, final OnRestaurantSelectedListener listener) {
 
-            onMyAdapterClickListener.onItemClick(pos);
+            final Drink drink = snapshot.toObject(Drink.class);
+            Resources resources = itemView.getResources();
+
+            gsReference = FirebaseStorage.getInstance().getReference().child("drinks").child(drink.getImage());
+
+            Log.d("AdapterRecyclerDrink", gsReference.getName());
+
+            final File file;
+            try {
+                file = File.createTempFile(drink.getImage(), "jpg");
+                gsReference.getFile(file)
+                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                Glide.with(dishPhoto.getContext())
+                                        .load(file.getAbsolutePath())
+                                        .into(dishPhoto);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("AdapterRecyclerDrink", "Ocurrio un error al mostrar la imagen");
+                        e.printStackTrace();
+                    }
+                });
+            }catch (Exception e){
+                Log.e("Adapter", "Ocurrió un error en la descarga de imágenes");
+                e.printStackTrace();
+            }
+
+            dishName.setText(drink.getName());
+            dishPrice.setText(drink.getStrPrice());
+
+            if(drink.isFavorite()){
+                dishFavorite.setVisibility(View.VISIBLE);
+            }
+
+            // Click listener
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (listener != null) {
+                        listener.onRestaurantSelected(snapshot);
+                    }
+                }
+            });
         }
 
+
     }
 
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-                String charString = charSequence.toString();
-                if (charString.isEmpty()) {
-                    drinksFilter = drinks;
-                } else {
-                    List<Drink> filteredList = new ArrayList<>();
-                    for (Drink row : drinks) {
-
-                        // name match condition. this might differ depending on your requirement
-                        // here we are looking for name or phone number match
-                        if (row.getName().toLowerCase().contains(charString.toLowerCase()) || row.getStrPrice().contains(charSequence)) {
-                            filteredList.add(row);
-                        }
-                    }
-
-                    drinksFilter = filteredList;
-                }
-
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = drinksFilter;
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                drinksFilter = (ArrayList<Drink>) filterResults.values;
-                notifyDataSetChanged();
-            }
-        };
-    }
 }

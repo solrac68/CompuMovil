@@ -13,31 +13,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
-import co.edu.udea.compumovil.gr06_20182.lab4.model.User;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Validation;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.Helper;
 import co.edu.udea.compumovil.gr06_20182.lab4.tools.SessionManager;
-import co.edu.udea.compumovil.gr06_20182.lab4.tools.SqliteHelper;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "LoginActivity";
@@ -50,7 +42,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     SignInButton btnSigInGoogle;
 
 
-    static SqliteHelper sqliteHelper;
 
     // Session Manager Class
     SessionManager session;
@@ -78,7 +69,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         btnLogin = findViewById(R.id.btnLogin);
         registerScreen = findViewById(R.id.link_to_register);
         btnSigInGoogle = findViewById(R.id.btnSigInGoogle);
-        sqliteHelper = new SqliteHelper(this);
         session = new SessionManager(getApplicationContext());
 
         firebasAuth = FirebaseAuth.getInstance();
