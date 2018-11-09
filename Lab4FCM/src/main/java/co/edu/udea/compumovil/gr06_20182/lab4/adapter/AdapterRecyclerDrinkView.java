@@ -60,6 +60,13 @@ public class AdapterRecyclerDrinkView extends FirestoreAdapter<AdapterRecyclerDr
 
     }
 
+//    @Override
+//    public void onDataChanged(String type){
+//        if (this.mListener != null) {
+//            this.mListener.onRestaurantChange(type);
+//        }
+//    }
+
 
 
     //Clase necesaria para la implementación del RecyclerView

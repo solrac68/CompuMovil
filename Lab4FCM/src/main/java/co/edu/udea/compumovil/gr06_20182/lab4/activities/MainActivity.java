@@ -1,6 +1,9 @@
 package co.edu.udea.compumovil.gr06_20182.lab4.activities;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -94,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        createNotificationChannel();
 
 
         dl = (DrawerLayout)findViewById(R.id.activity_main);
@@ -235,18 +239,21 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-//    private void getSession() {
-//        session = new SessionManager(getApplicationContext());
-//
-//        HashMap<String, String> user = session.getUserDetails();
-//        userName = user.get(SessionManager.KEY_NAME);
-//        userEmail = user.get(SessionManager.KEY_EMAIL);
-//        userPassword = user.get(SessionManager.KEY_PASSWORD);
-//        image = sqliteHelper.getUserByEmail(userEmail).getImage();
-//
-//        txtViewHeader.setText(userName);
-//        txtViewHeaderEmail.setText(userEmail);
-//    }
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(getString(R.string.channel_id), name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
 
     @Override

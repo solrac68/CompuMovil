@@ -1,14 +1,22 @@
 package co.edu.udea.compumovil.gr06_20182.lab4.fragment;
 
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -30,6 +38,7 @@ import com.google.firebase.firestore.Query;
 import java.util.List;
 
 import co.edu.udea.compumovil.gr06_20182.lab4.R;
+import co.edu.udea.compumovil.gr06_20182.lab4.activities.MainActivity;
 import co.edu.udea.compumovil.gr06_20182.lab4.adapter.AdapterRecyclerDrinkView;
 import co.edu.udea.compumovil.gr06_20182.lab4.adapter.AdapterRecyclerView;
 import co.edu.udea.compumovil.gr06_20182.lab4.adapter.OnMyAdapterClickListener;
@@ -41,6 +50,7 @@ import co.edu.udea.compumovil.gr06_20182.lab4.tools.OnMyResponse;
  * A simple {@link Fragment} subclass.
  */
 public class Drinks extends Fragment {
+    private static final String CHANNEL_ID = "DRINKS";
     List<Drink> drinks;
     private RecyclerView mRecyclerView;
     private AdapterRecyclerDrinkView adapter;
@@ -56,6 +66,8 @@ public class Drinks extends Fragment {
 
     private FirebaseFirestore mFirestore;
     private Query mQuery;
+    private boolean notificacion;
+    private SharedPreferences pref;
 
 
     public Drinks() {
@@ -85,6 +97,8 @@ public class Drinks extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        notificacion = pref.getBoolean("key_notification",false);
         setHasOptionsMenu(true);
     }
 
@@ -163,7 +177,9 @@ public class Drinks extends Fragment {
         }){
 
             @Override
-            protected void onDataChanged() {
+            protected void onDataChanged(String message) {
+                if(notificacion)
+                    showNotification(message);
             }
 
             @Override
@@ -173,6 +189,33 @@ public class Drinks extends Fragment {
         };
 
         mRecyclerView.setAdapter(adapter);
+    }
+
+    private void showNotification(String message){
+        Intent intent = new Intent(getActivity(),MainActivity.class);
+
+        intent.putExtra("Message", message);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent
+                = PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getActivity(),getString(R.string.channel_id))
+                .setSmallIcon(R.drawable.beer)
+                .setContentTitle(getString(R.string.title_notification))
+                .setContentText(message + " bebida")
+                .setAutoCancel(true)
+                .setVisibility(NotificationCompat.PRIORITY_HIGH)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent);
+
+
+        NotificationManager notificationManager
+                = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+        notificationManager.notify(0, notificationBuilder.build());
+
     }
 
 

@@ -15,6 +15,12 @@
  */
  package co.edu.udea.compumovil.gr06_20182.lab4.adapter;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
@@ -30,8 +36,11 @@ import android.widget.Filter;
 import android.widget.Filterable;
 
 import java.util.ArrayList;
+import android.net.Uri;
 import java.util.List;
 
+import co.edu.udea.compumovil.gr06_20182.lab4.R;
+import co.edu.udea.compumovil.gr06_20182.lab4.activities.MainActivity;
 import co.edu.udea.compumovil.gr06_20182.lab4.model.Dish;
 
 /**
@@ -56,9 +65,11 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
 
     private ArrayList<DocumentSnapshot> mSnapshots = new ArrayList<>();
 
+    private String typeChange;
+
     public FirestoreAdapter(Query query) {
         mQuery = query;
-        //mQuerySearch = query;
+        //this.onRestaurantChangeData = onRestaurantChangeData;
     }
 
     public void startListening() {
@@ -102,7 +113,7 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
 
     protected void onError(FirebaseFirestoreException e) {};
 
-    protected void onDataChanged() {}
+    protected void onDataChanged(String type) {}
 
     @Override
     public void onEvent(QuerySnapshot documentSnapshots,
@@ -123,19 +134,23 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
                 case ADDED:
                     // TODO: handle document added
                     onDocumentAdded(change);
+                    typeChange = "Nuevo";
                     break;
                 case MODIFIED:
                     // TODO: handle document modified
                     onDocumentModified(change);
+                    typeChange = "Modificado";
                     break;
                 case REMOVED:
                     // TODO: handle document removed
                     onDocumentRemoved(change);
+                    typeChange = "Eliminado";
                     break;
             }
+            onDataChanged(typeChange);
         }
 
-        onDataChanged();
+
     }
 
     protected void onDocumentAdded(DocumentChange change) {
@@ -160,6 +175,32 @@ public abstract class FirestoreAdapter<VH extends RecyclerView.ViewHolder>
         mSnapshots.remove(change.getOldIndex());
         notifyItemRemoved(change.getOldIndex());
     }
+
+//    void showNotification(String message){
+//        //Intent intent = new Intent(this, MainActivity.class);
+//        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//        intent.putExtra("MESAGGE", message);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent pendingIntent
+//                = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+//
+//        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+//                .setSmallIcon(R.drawable.lobster)
+//                .setContentTitle(platziNotificacion.getTitle())
+//                .setContentText(platziNotificacion.getDescription())
+//                .setAutoCancel(true)
+//                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+//                .setSound(defaultSoundUri)
+//                .setContentIntent(pendingIntent);
+//
+//
+//        NotificationManager notificationManager
+//                = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//
+//        notificationManager.notify(0, notificationBuilder.build());
+//    }
 
     @Override
     public Filter getFilter() {

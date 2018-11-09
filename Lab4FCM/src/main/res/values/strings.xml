@@ -105,4 +105,9 @@
     <string name="unit">Precio (pesos)</string>
     <string name="DRINKS">drinks</string>
     <string name="DISHES">dishes</string>
+    <string name="newRegister">Nuevo</string>
+    <string name="channel_name">\"Restaurant\"</string>
+    <string name="channel_description">\"Dishes and Drinks\"</string>
+    <string name="channel_id">Platos_nuevos</string>
+    <string name="title_notification">Cambio en el menu</string>
 </resources>

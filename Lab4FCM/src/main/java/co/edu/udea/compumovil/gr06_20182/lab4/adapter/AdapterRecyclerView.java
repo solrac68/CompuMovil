@@ -53,6 +53,13 @@ public class AdapterRecyclerView extends FirestoreAdapter<AdapterRecyclerView.Di
         holder.bind(getSnapshot(pos), mListener);
     }
 
+//    @Override
+//    public void onDataChanged(String type){
+//        if (this.mListener != null) {
+//            this.mListener.onRestaurantChange(type);
+//        }
+//    }
+
 
     //Clase necesaria para la implementación del RecyclerView
     public class DishViewHolder extends RecyclerView.ViewHolder{
